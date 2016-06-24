@@ -28,7 +28,7 @@ class CApiIosManager extends AApiManager
 		/*
 		 * @var $oApiUsersManager CApiUsersManager
 		 */
-		$this->oApiUsersManager = CApi::GetCoreManager('users');
+		$this->oApiUsersManager = CApi::GetSystemManager('users');
 
 		/*
 		 * @var $oApiDavManager CApiDavManager

@@ -16,7 +16,7 @@ class IosModule extends AApiModule
 	{
 		$sResult = file_get_contents($this->GetPath().'/templates/Ios.html');
 
-		$oApiIntegrator = \CApi::GetCoreManager('integrator');
+		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 		$iUserId = $oApiIntegrator->getLogginedUserId();
 		if (0 < $iUserId)
 		{
@@ -53,9 +53,9 @@ class IosModule extends AApiModule
 	public function EntryProfile()
 	{
 		/* @var $oApiIosManager \CApiIosManager */
-		$oApiIosManager = \CApi::GetCoreManager('ios');
+		$oApiIosManager = \CApi::GetSystemManager('ios');
 
-		$oApiIntegrator = \CApi::GetCoreManager('integrator');
+		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 		$oAccount = $oApiIntegrator->getLogginedDefaultAccount();
 
 		$mResultProfile = $oApiIosManager && $oAccount ? $oApiIosManager->generateXMLProfile($oAccount) : false;
