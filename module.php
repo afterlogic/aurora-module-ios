@@ -17,10 +17,10 @@ class IosModule extends AApiModule
 		$sResult = file_get_contents($this->GetPath().'/templates/Ios.html');
 
 		$oApiIntegrator = \CApi::GetSystemManager('integrator');
-		$iUserId = $oApiIntegrator->getLogginedUserId();
+		$iUserId = \CApi::getAuthenticatedUserId();
 		if (0 < $iUserId)
 		{
-			$oAccount = $oApiIntegrator->getLogginedDefaultAccount();
+			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
 			$aPaths = \System\Service::GetPaths();
 			$bError = isset($aPaths[1]) && 'error' === strtolower($aPaths[1]); // TODO
 
@@ -56,7 +56,7 @@ class IosModule extends AApiModule
 		$oApiIosManager = \CApi::GetSystemManager('ios');
 
 		$oApiIntegrator = \CApi::GetSystemManager('integrator');
-		$oAccount = $oApiIntegrator->getLogginedDefaultAccount();
+		$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
 
 		$mResultProfile = $oApiIosManager && $oAccount ? $oApiIosManager->generateXMLProfile($oAccount) : false;
 
