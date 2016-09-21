@@ -1,7 +1,29 @@
 <?php
+/*
+ * @copyright Copyright (c) 2016, Afterlogic Corp.
+ * @license AGPL-3.0
+ *
+ * This code is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License, version 3,
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 class IosModule extends AApiModule
 {
+	/***** private functions *****/
+	/**
+	 * Initializes IOS Module.
+	 * 
+	 * @ignore
+	 */
 	public function init() {
 		parent::init();
 		
@@ -11,11 +33,17 @@ class IosModule extends AApiModule
 			)
 		);
 	}
+	/***** private functions *****/
 	
+	/***** public functions *****/
+	/**
+	 * @ignore
+	 * @return string
+	 */
 	public function EntryIos()
 	{
 		$sResult = file_get_contents($this->GetPath().'/templates/Ios.html');
-
+		
 		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 		$iUserId = \CApi::getAuthenticatedUserId();
 		if (0 < $iUserId)
@@ -23,9 +51,9 @@ class IosModule extends AApiModule
 			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
 			$aPaths = \System\Service::GetPaths();
 			$bError = isset($aPaths[1]) && 'error' === strtolower($aPaths[1]); // TODO
-
+			
 			@setcookie('skip_ios', '1', time() + 3600 * 3600, '/', null, null, true);
-
+			
 			$sResult = strtr($sResult, array(
 				'{{IOS/HELLO}}' => \CApi::ClientI18N('IOS/HELLO', $oAccount),
 				'{{IOS/DESC_P1}}' => \CApi::ClientI18N('IOS/DESC_P1', $oAccount),
@@ -50,16 +78,19 @@ class IosModule extends AApiModule
 		return $sResult;
 	}
 	
+	/**
+	 * @ignore
+	 */
 	public function EntryProfile()
 	{
 		/* @var $oApiIosManager \CApiIosManager */
 		$oApiIosManager = \CApi::GetSystemManager('ios');
-
+		
 		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 		$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
-
+		
 		$mResultProfile = $oApiIosManager && $oAccount ? $oApiIosManager->generateXMLProfile($oAccount) : false;
-
+		
 		if (!$mResultProfile)
 		{
 			\CApi::Location('./?IOS/Error');
@@ -69,7 +100,7 @@ class IosModule extends AApiModule
 			header('Content-type: application/x-apple-aspen-config; chatset=utf-8');
 			header('Content-Disposition: attachment; filename="afterlogic.mobileconfig"');
 			echo $mResultProfile;
-		}		
+		}
 	}
-	
+	/***** public functions *****/
 }
