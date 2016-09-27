@@ -258,7 +258,6 @@ class CApiIosManager extends AApiManager
 			$oArrayElement = $oXmlDocument->createElement('array');
 
 			$bIsDemo = false;
-			\CApi::Plugin()->RunHook('plugin-is-demo-account', array(&$oAccount, &$bIsDemo));
 
 			if (!$bIsDemo)
 			{
