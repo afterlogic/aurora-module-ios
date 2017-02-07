@@ -145,8 +145,7 @@ class CApiIosManager extends AApiManager
 			'PayloadOrganization'				=> $oAccount->Domain->SiteName,
 			'PayloadDescription'				=> 'Configures email account',
 			'EmailAddress'						=> $oAccount->Email,
-			'EmailAccountType'					=> EMailProtocol::IMAP4 === $oAccount->IncomingMailProtocol
-				? 'EmailTypeIMAP' : 'EmailTypePOP',
+			'EmailAccountType'					=> 'EmailTypeIMAP',
 			'EmailAccountDescription'			=> $oAccount->Email,
 			'EmailAccountName'					=> 0 === strlen($oAccount->FriendlyName)
 				? $oAccount->Email : $oAccount->FriendlyName,
