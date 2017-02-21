@@ -136,13 +136,14 @@ class CApiIosManager extends AApiManager
 			return false;
 		}
 
+		$oSettings =& CApi::GetSettings();
 		$aEmail = array(
 			'PayloadVersion'					=> 1,
 			'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
 			'PayloadType'						=> 'com.apple.mail.managed',
 			'PayloadIdentifier'					=> $sPayloadId.'.email',
 			'PayloadDisplayName'				=> 'Email Account',
-			'PayloadOrganization'				=> $oAccount->Domain->SiteName,
+			'PayloadOrganization'				=> $oSettings->GetConf('SiteName'),
 			'PayloadDescription'				=> 'Configures email account',
 			'EmailAddress'						=> $oAccount->Email,
 			'EmailAccountType'					=> 'EmailTypeIMAP',
@@ -180,15 +181,16 @@ class CApiIosManager extends AApiManager
 	 */
 	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
+		$oSettings =& CApi::GetSettings();
 		$aCaldav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
 			'PayloadType'				=> 'com.apple.caldav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.caldav',
 			'PayloadDisplayName'		=> 'CalDAV Account',
-			'PayloadOrganization'		=> $oAccount->Domain->SiteName,
+			'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
 			'PayloadDescription'		=> 'Configures CalDAV Account',
-			'CalDAVAccountDescription'	=> $oAccount->Domain->SiteName.' Calendars',
+			'CalDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Calendars',
 			'CalDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
 			'CalDAVUsername'			=> $oAccount->Email,
 			'CalDAVPassword'			=> $bIsDemo ? 'demo' : (CApi::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
@@ -212,15 +214,16 @@ class CApiIosManager extends AApiManager
 	
 	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
+		$oSettings =& CApi::GetSettings();
 		$aCarddav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
 			'PayloadType'				=> 'com.apple.carddav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.carddav',
 			'PayloadDisplayName'		=> 'CardDAV Account',
-			'PayloadOrganization'		=> $oAccount->Domain->SiteName,
+			'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
 			'PayloadDescription'		=> 'Configures CardDAV Account',
-			'CardDAVAccountDescription'	=> $oAccount->Domain->SiteName.' Contacts',
+			'CardDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Contacts',
 			'CardDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
 			'CardDAVUsername'			=> $oAccount->Email,
 			'CardDAVPassword'			=> $bIsDemo ? 'demo' : (CApi::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
@@ -258,15 +261,16 @@ class CApiIosManager extends AApiManager
 			$oPlist->setAttribute('version', '1.0');
 
 			$sPayloadId = $this->oApiDavManager ? 'afterlogic.'.$this->oApiDavManager->getServerHost($oAccount) : '';
+			$oSettings =& CApi::GetSettings();
 			$aPayload = array(
 				'PayloadVersion'			=> 1,
 				'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
 				'PayloadType'				=> 'Configuration',
 				'PayloadRemovalDisallowed'	=> false,
 				'PayloadIdentifier'			=> $sPayloadId,
-				'PayloadOrganization'		=> $oAccount->Domain->SiteName,
-				'PayloadDescription'		=> $oAccount->Domain->SiteName.' Mobile',
-				'PayloadDisplayName'		=> $oAccount->Domain->SiteName.' Mobile Profile',
+				'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
+				'PayloadDescription'		=> $oSettings->GetConf('SiteName').' Mobile',
+				'PayloadDisplayName'		=> $oSettings->GetConf('SiteName').' Mobile Profile',
 //				'ConsentText'				=> 'AfterLogic Profile @ConsentText',
 			);
 
