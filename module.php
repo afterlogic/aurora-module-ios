@@ -18,7 +18,9 @@
  * @package Modules
  */
 
-class IosModule extends AApiModule
+namespace Aurora\Modules;
+
+class IosModule extends \AApiModule
 {
 	/***** private functions *****/
 	/**
@@ -26,7 +28,8 @@ class IosModule extends AApiModule
 	 * 
 	 * @ignore
 	 */
-	public function init() {
+	public function init() 
+	{
 		parent::init();
 		
 		$this->AddEntries(array(
@@ -44,7 +47,7 @@ class IosModule extends AApiModule
 	 */
 	public function EntryIos()
 	{
-		$sResult = file_get_contents($this->GetPath().'/templates/Ios.html');
+		$sResult = \file_get_contents($this->GetPath().'/templates/Ios.html');
 		
 		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 		$iUserId = \CApi::getAuthenticatedUserId();
@@ -52,9 +55,9 @@ class IosModule extends AApiModule
 		{
 			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
 			$aPaths = \System\Service::GetPaths();
-			$bError = isset($aPaths[1]) && 'error' === strtolower($aPaths[1]); // TODO
+			$bError = isset($aPaths[1]) && 'error' === \strtolower($aPaths[1]); // TODO
 			
-			@setcookie('skip_ios', '1', time() + 3600 * 3600, '/', null, null, true);
+			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
 			
 			$sResult = strtr($sResult, array(
 				'{{IOS/HELLO}}' => \CApi::ClientI18N('IOS/HELLO', $oAccount),
@@ -99,8 +102,8 @@ class IosModule extends AApiModule
 		}
 		else
 		{
-			header('Content-type: application/x-apple-aspen-config; chatset=utf-8');
-			header('Content-Disposition: attachment; filename="afterlogic.mobileconfig"');
+			\header('Content-type: application/x-apple-aspen-config; chatset=utf-8');
+			\header('Content-Disposition: attachment; filename="afterlogic.mobileconfig"');
 			echo $mResultProfile;
 		}
 	}

@@ -44,12 +44,12 @@ class CApiIosManager extends AApiManager
 		/*
 		 * @var $oApiUsersManager CApiUsersManager
 		 */
-		$this->oApiUsersManager = CApi::GetSystemManager('users');
+		$this->oApiUsersManager =\CApi::GetSystemManager('users');
 
 		/*
 		 * @var $oApiDavManager CApiDavManager
 		 */
-		$this->oApiDavManager = CApi::Manager('dav');
+		$this->oApiDavManager =\CApi::Manager('dav');
 	}
 
 	/**
@@ -94,7 +94,7 @@ class CApiIosManager extends AApiManager
 	 */
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings = CApi::GetSettings();
+		$oSettings =\CApi::GetSettings();
 
 		$sIncomingServer = $oAccount->IncomingServer;
 		$iIncomingPort = $oAccount->IncomingPort;
@@ -136,7 +136,7 @@ class CApiIosManager extends AApiManager
 			return false;
 		}
 
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		$aEmail = array(
 			'PayloadVersion'					=> 1,
 			'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -181,7 +181,7 @@ class CApiIosManager extends AApiManager
 	 */
 	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		$aCaldav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -214,7 +214,7 @@ class CApiIosManager extends AApiManager
 	
 	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		$aCarddav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -261,7 +261,7 @@ class CApiIosManager extends AApiManager
 			$oPlist->setAttribute('version', '1.0');
 
 			$sPayloadId = $this->oApiDavManager ? 'afterlogic.'.$this->oApiDavManager->getServerHost($oAccount) : '';
-			$oSettings =& CApi::GetSettings();
+			$oSettings =&\CApi::GetSettings();
 			$aPayload = array(
 				'PayloadVersion'			=> 1,
 				'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
