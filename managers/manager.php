@@ -21,7 +21,7 @@
 /**
  * @package IOS
  */
-class CApiIosManager extends AApiManager
+class CApiIosManager extends \Aurora\System\AbstractManager
 {
 	/*
 	 * @var $oApiUsersManager CApiUsersManager
@@ -34,22 +34,22 @@ class CApiIosManager extends AApiManager
 	private $oApiDavManager;
 
 	/**
-	 * @param CApiGlobalManager &$oManager
+	 * @param \Aurora\System\GlobalManager &$oManager
 	 * @param string $sForcedStorage
 	 */
-	public function __construct(CApiGlobalManager &$oManager, $sForcedStorage = '')
+	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '')
 	{
 		parent::__construct('', $oManager);
 
 		/*
 		 * @var $oApiUsersManager CApiUsersManager
 		 */
-		$this->oApiUsersManager =\CApi::GetSystemManager('users');
+		$this->oApiUsersManager =\Aurora\System\Api::GetSystemManager('users');
 
 		/*
 		 * @var $oApiDavManager CApiDavManager
 		 */
-		$this->oApiDavManager =\CApi::Manager('dav');
+		$this->oApiDavManager =\Aurora\System\Api::Manager('dav');
 	}
 
 	/**
@@ -94,7 +94,7 @@ class CApiIosManager extends AApiManager
 	 */
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings =\CApi::GetSettings();
+		$oSettings =\Aurora\System\Api::GetSettings();
 
 		$sIncomingServer = $oAccount->IncomingServer;
 		$iIncomingPort = $oAccount->IncomingPort;
@@ -136,7 +136,7 @@ class CApiIosManager extends AApiManager
 			return false;
 		}
 
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		$aEmail = array(
 			'PayloadVersion'					=> 1,
 			'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -154,14 +154,14 @@ class CApiIosManager extends AApiManager
 			'IncomingMailServerPortNumber'		=> $iIncomingPort,
 			'IncomingMailServerUseSSL'			=> 993 === $iIncomingPort,
 			'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
-			'IncomingPassword'					=> $bIsDemo ? 'demo' : (CApi::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
+			'IncomingPassword'					=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
 			'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
 			'OutgoingMailServerUseSSL'			=> 465 === $iIncomingPort,
 			'OutgoingMailServerUsername'		=> 0 === strlen($oAccount->OutgoingLogin)
 				? $oAccount->IncomingLogin : $oAccount->OutgoingLogin,
-			'OutgoingPassword'					=> $bIsDemo ? 'demo' : (CApi::GetConf('labs.ios-profile.include-password', true) ? (0 === strlen($oAccount->OutgoingPassword)
+			'OutgoingPassword'					=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? (0 === strlen($oAccount->OutgoingPassword)
 				? $oAccount->IncomingPassword : $oAccount->OutgoingPassword) : ''),
 			'OutgoingMailServerAuthentication'	=> $oAccount->OutgoingUseAuth
 				? 'EmailAuthPassword' : 'EmailAuthNone',
@@ -181,7 +181,7 @@ class CApiIosManager extends AApiManager
 	 */
 	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		$aCaldav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -193,7 +193,7 @@ class CApiIosManager extends AApiManager
 			'CalDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Calendars',
 			'CalDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
 			'CalDAVUsername'			=> $oAccount->Email,
-			'CalDAVPassword'			=> $bIsDemo ? 'demo' : (CApi::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
+			'CalDAVPassword'			=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
 			'CalDAVUseSSL'				=> $this->oApiDavManager ? $this->oApiDavManager->isUseSsl($oAccount) : '',
 			'CalDAVPort'				=> $this->oApiDavManager ? $this->oApiDavManager->getServerPort($oAccount) : '',
 			'CalDAVPrincipalURL'		=> $this->oApiDavManager ? $this->oApiDavManager->getPrincipalUrl($oAccount) : '',
@@ -214,7 +214,7 @@ class CApiIosManager extends AApiManager
 	
 	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		$aCarddav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -226,7 +226,7 @@ class CApiIosManager extends AApiManager
 			'CardDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Contacts',
 			'CardDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
 			'CardDAVUsername'			=> $oAccount->Email,
-			'CardDAVPassword'			=> $bIsDemo ? 'demo' : (CApi::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
+			'CardDAVPassword'			=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
 			'CardDAVUseSSL'				=> $this->oApiDavManager ? $this->oApiDavManager->isUseSsl($oAccount) : '',
 			'CardDAVPort'				=> $this->oApiDavManager ? $this->oApiDavManager->getServerPort($oAccount) : '',
 			'CardDAVPrincipalURL'		=> $this->oApiDavManager ? $this->oApiDavManager->getPrincipalUrl($oAccount) : '',
@@ -261,7 +261,7 @@ class CApiIosManager extends AApiManager
 			$oPlist->setAttribute('version', '1.0');
 
 			$sPayloadId = $this->oApiDavManager ? 'afterlogic.'.$this->oApiDavManager->getServerHost($oAccount) : '';
-			$oSettings =&\CApi::GetSettings();
+			$oSettings =&\Aurora\System\Api::GetSettings();
 			$aPayload = array(
 				'PayloadVersion'			=> 1,
 				'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),

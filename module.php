@@ -20,7 +20,7 @@
 
 namespace Aurora\Modules;
 
-class IosModule extends \AApiModule
+class IosModule extends \Aurora\System\AbstractModule
 {
 	/***** private functions *****/
 	/**
@@ -49,8 +49,8 @@ class IosModule extends \AApiModule
 	{
 		$sResult = \file_get_contents($this->GetPath().'/templates/Ios.html');
 		
-		$oApiIntegrator = \CApi::GetSystemManager('integrator');
-		$iUserId = \CApi::getAuthenticatedUserId();
+		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 		if (0 < $iUserId)
 		{
 			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
@@ -60,24 +60,24 @@ class IosModule extends \AApiModule
 			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
 			
 			$sResult = strtr($sResult, array(
-				'{{IOS/HELLO}}' => \CApi::ClientI18N('IOS/HELLO', $oAccount),
-				'{{IOS/DESC_P1}}' => \CApi::ClientI18N('IOS/DESC_P1', $oAccount),
-				'{{IOS/DESC_P2}}' => \CApi::ClientI18N('IOS/DESC_P2', $oAccount),
-				'{{IOS/DESC_P3}}' => \CApi::ClientI18N('IOS/DESC_P3', $oAccount),
-				'{{IOS/DESC_P4}}' => \CApi::ClientI18N('IOS/DESC_P4', $oAccount),
-				'{{IOS/DESC_P5}}' => \CApi::ClientI18N('IOS/DESC_P5', $oAccount),
-				'{{IOS/DESC_P6}}' => \CApi::ClientI18N('IOS/DESC_P6', $oAccount),
-				'{{IOS/DESC_P7}}' => \CApi::ClientI18N('IOS/DESC_P7', $oAccount),
-				'{{IOS/DESC_BUTTON_YES}}' => \CApi::ClientI18N('IOS/DESC_BUTTON_YES', $oAccount),
-				'{{IOS/DESC_BUTTON_SKIP}}' => \CApi::ClientI18N('IOS/DESC_BUTTON_SKIP', $oAccount),
-				'{{IOS/DESC_BUTTON_OPEN}}' => \CApi::ClientI18N('IOS/DESC_BUTTON_OPEN', $oAccount),
+				'{{IOS/HELLO}}' => \Aurora\System\Api::ClientI18N('IOS/HELLO', $oAccount),
+				'{{IOS/DESC_P1}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P1', $oAccount),
+				'{{IOS/DESC_P2}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P2', $oAccount),
+				'{{IOS/DESC_P3}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P3', $oAccount),
+				'{{IOS/DESC_P4}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P4', $oAccount),
+				'{{IOS/DESC_P5}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P5', $oAccount),
+				'{{IOS/DESC_P6}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P6', $oAccount),
+				'{{IOS/DESC_P7}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P7', $oAccount),
+				'{{IOS/DESC_BUTTON_YES}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_BUTTON_YES', $oAccount),
+				'{{IOS/DESC_BUTTON_SKIP}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_BUTTON_SKIP', $oAccount),
+				'{{IOS/DESC_BUTTON_OPEN}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_BUTTON_OPEN', $oAccount),
 				'{{AppVersion}}' => AURORA_APP_VERSION,
 				'{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
 			));
 		}
 		else
 		{
-			\CApi::Location('./');
+			\Aurora\System\Api::Location('./');
 		}
 		
 		return $sResult;
@@ -89,16 +89,16 @@ class IosModule extends \AApiModule
 	public function EntryProfile()
 	{
 		/* @var $oApiIosManager \CApiIosManager */
-		$oApiIosManager = \CApi::GetSystemManager('ios');
+		$oApiIosManager = \Aurora\System\Api::GetSystemManager('ios');
 		
-		$oApiIntegrator = \CApi::GetSystemManager('integrator');
+		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 		$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
 		
 		$mResultProfile = $oApiIosManager && $oAccount ? $oApiIosManager->generateXMLProfile($oAccount) : false;
 		
 		if (!$mResultProfile)
 		{
-			\CApi::Location('./?IOS/Error');
+			\Aurora\System\Api::Location('./?IOS/Error');
 		}
 		else
 		{
