@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2016, Afterlogic Corp.
+ * @copyright Copyright (c) 2017, Afterlogic Corp.
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ class IosModule extends \Aurora\System\AbstractModule
 		if (0 < $iUserId)
 		{
 			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
-			$aPaths = \System\Service::GetPaths();
+			$aPaths = \Aurora\System\Service::GetPaths();
 			$bError = isset($aPaths[1]) && 'error' === \strtolower($aPaths[1]); // TODO
 			
 			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
