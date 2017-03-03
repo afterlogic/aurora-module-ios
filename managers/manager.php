@@ -44,7 +44,7 @@ class CApiIosManager extends \Aurora\System\AbstractManager
 		/*
 		 * @var $oApiUsersManager CApiUsersManager
 		 */
-		$this->oApiUsersManager =\Aurora\System\Api::GetSystemManager('users');
+//		$this->oApiUsersManager =\Aurora\System\Api::GetSystemManager('users');
 
 		/*
 		 * @var $oApiDavManager CApiDavManager

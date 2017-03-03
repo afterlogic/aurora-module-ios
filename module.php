@@ -20,7 +20,7 @@
 
 namespace Aurora\Modules;
 
-class IosModule extends \Aurora\System\AbstractModule
+class IosModule extends \Aurora\System\Module\AbstractModule
 {
 	/***** private functions *****/
 	/**
