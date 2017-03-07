@@ -21,7 +21,7 @@
 /**
  * @package IOS
  */
-class CApiIosManager extends \Aurora\System\AbstractManager
+class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 {
 	/*
 	 * @var $oApiUsersManager CApiUsersManager
@@ -34,10 +34,10 @@ class CApiIosManager extends \Aurora\System\AbstractManager
 	private $oApiDavManager;
 
 	/**
-	 * @param \Aurora\System\GlobalManager &$oManager
+	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 * @param string $sForcedStorage
 	 */
-	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '')
+	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = '')
 	{
 		parent::__construct('', $oManager);
 
