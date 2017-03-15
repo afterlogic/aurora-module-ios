@@ -54,9 +54,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if (0 < $iUserId)
 		{
 			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
-			$aPaths = \Aurora\System\Application::GetPaths();
-			$bError = isset($aPaths[1]) && 'error' === \strtolower($aPaths[1]); // TODO
-			
+
 			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
 			
 			$sResult = strtr($sResult, array(
