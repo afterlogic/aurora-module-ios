@@ -137,6 +137,7 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 		}
 
 		$oSettings =&\Aurora\System\Api::GetSettings();
+		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
 		$aEmail = array(
 			'PayloadVersion'					=> 1,
 			'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -154,14 +155,14 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 			'IncomingMailServerPortNumber'		=> $iIncomingPort,
 			'IncomingMailServerUseSSL'			=> 993 === $iIncomingPort,
 			'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
-			'IncomingPassword'					=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
+			'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
 			'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
 			'OutgoingMailServerUseSSL'			=> 465 === $iIncomingPort,
 			'OutgoingMailServerUsername'		=> 0 === strlen($oAccount->OutgoingLogin)
 				? $oAccount->IncomingLogin : $oAccount->OutgoingLogin,
-			'OutgoingPassword'					=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? (0 === strlen($oAccount->OutgoingPassword)
+			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? (0 === strlen($oAccount->OutgoingPassword)
 				? $oAccount->IncomingPassword : $oAccount->OutgoingPassword) : ''),
 			'OutgoingMailServerAuthentication'	=> $oAccount->OutgoingUseAuth
 				? 'EmailAuthPassword' : 'EmailAuthNone',
@@ -182,6 +183,7 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
 		$oSettings =&\Aurora\System\Api::GetSettings();
+		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
 		$aCaldav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -193,7 +195,7 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 			'CalDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Calendars',
 			'CalDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
 			'CalDAVUsername'			=> $oAccount->Email,
-			'CalDAVPassword'			=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
+			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
 			'CalDAVUseSSL'				=> $this->oApiDavManager ? $this->oApiDavManager->isUseSsl($oAccount) : '',
 			'CalDAVPort'				=> $this->oApiDavManager ? $this->oApiDavManager->getServerPort($oAccount) : '',
 			'CalDAVPrincipalURL'		=> $this->oApiDavManager ? $this->oApiDavManager->getPrincipalUrl($oAccount) : '',
@@ -215,6 +217,7 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
 		$oSettings =&\Aurora\System\Api::GetSettings();
+		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
 		$aCarddav = array(
 			'PayloadVersion'			=> 1,
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -226,7 +229,7 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 			'CardDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Contacts',
 			'CardDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
 			'CardDAVUsername'			=> $oAccount->Email,
-			'CardDAVPassword'			=> $bIsDemo ? 'demo' : (\Aurora\System\Api::GetConf('labs.ios-profile.include-password', true) ? $oAccount->IncomingPassword : ''),
+			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
 			'CardDAVUseSSL'				=> $this->oApiDavManager ? $this->oApiDavManager->isUseSsl($oAccount) : '',
 			'CardDAVPort'				=> $this->oApiDavManager ? $this->oApiDavManager->getServerPort($oAccount) : '',
 			'CardDAVPrincipalURL'		=> $this->oApiDavManager ? $this->oApiDavManager->getPrincipalUrl($oAccount) : '',
