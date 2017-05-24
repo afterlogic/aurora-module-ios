@@ -8,10 +8,10 @@
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
 
-/**
- * @package IOS
- */
-class CApiIosManager extends \Aurora\System\Managers\AbstractManager
+
+namespace Aurora\Modules\Ios\Managers;
+
+class Ios extends \Aurora\System\Managers\AbstractManager
 {
 	/*
 	 * @var $oApiUsersManager CApiUsersManager
@@ -27,9 +27,9 @@ class CApiIosManager extends \Aurora\System\Managers\AbstractManager
 	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 * @param string $sForcedStorage
 	 */
-	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = '')
+	public function __construct($sForcedStorage = '')
 	{
-		parent::__construct('', $oManager);
+		parent::__construct('');
 
 		/*
 		 * @var $oApiUsersManager CApiUsersManager

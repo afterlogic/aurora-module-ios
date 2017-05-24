@@ -79,8 +79,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntryProfile()
 	{
-		/* @var $oApiIosManager \CApiIosManager */
-		$oApiIosManager = \Aurora\System\Api::GetSystemManager('ios');
+		$oIosManager = new Managers\Ios();
 		
 		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 		$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
