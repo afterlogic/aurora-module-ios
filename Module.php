@@ -42,7 +42,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		$sResult = \file_get_contents($this->GetPath().'/templates/Ios.html');
 		
-		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegrator = new \Aurora\Modules\Core\Managers\Integrator();
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 		if (0 < $iUserId)
 		{
@@ -81,10 +81,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		$oIosManager = new Managers\Ios();
 		
-		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegrator = new \Aurora\Modules\Core\Managers\Integrator();
 		$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
 		
-		$mResultProfile = $oApiIosManager && $oAccount ? $oApiIosManager->generateXMLProfile($oAccount) : false;
+		$mResultProfile = $oIosManager && $oAccount ? $oIosManager->generateXMLProfile($oAccount) : false;
 		
 		if (!$mResultProfile)
 		{
