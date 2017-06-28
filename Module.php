@@ -46,22 +46,20 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 		if (0 < $iUserId)
 		{
-			$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
-
 			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
 			
 			$sResult = strtr($sResult, array(
-				'{{IOS/HELLO}}' => \Aurora\System\Api::ClientI18N('IOS/HELLO', $oAccount),
-				'{{IOS/DESC_P1}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P1', $oAccount),
-				'{{IOS/DESC_P2}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P2', $oAccount),
-				'{{IOS/DESC_P3}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P3', $oAccount),
-				'{{IOS/DESC_P4}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P4', $oAccount),
-				'{{IOS/DESC_P5}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P5', $oAccount),
-				'{{IOS/DESC_P6}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P6', $oAccount),
-				'{{IOS/DESC_P7}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_P7', $oAccount),
-				'{{IOS/DESC_BUTTON_YES}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_BUTTON_YES', $oAccount),
-				'{{IOS/DESC_BUTTON_SKIP}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_BUTTON_SKIP', $oAccount),
-				'{{IOS/DESC_BUTTON_OPEN}}' => \Aurora\System\Api::ClientI18N('IOS/DESC_BUTTON_OPEN', $oAccount),
+				'{{IOS/HELLO}}' => $this->i18N('HELLO', $iUserId),
+				'{{IOS/DESC_P1}}' => $this->i18N('DESC_P1', $iUserId),
+				'{{IOS/DESC_P2}}' => $this->i18N('DESC_P2', $iUserId),
+				'{{IOS/DESC_P3}}' => $this->i18N('DESC_P3', $iUserId),
+				'{{IOS/DESC_P4}}' => $this->i18N('DESC_P4', $iUserId),
+				'{{IOS/DESC_P5}}' => $this->i18N('DESC_P5', $iUserId),
+				'{{IOS/DESC_P6}}' => $this->i18N('DESC_P6', $iUserId),
+				'{{IOS/DESC_P7}}' => $this->i18N('DESC_P7', $iUserId),
+				'{{IOS/DESC_BUTTON_YES}}' => $this->i18N('DESC_BUTTON_YES', $iUserId),
+				'{{IOS/DESC_BUTTON_SKIP}}' => $this->i18N('DESC_BUTTON_SKIP', $iUserId),
+				'{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN', $iUserId),
 				'{{AppVersion}}' => AURORA_APP_VERSION,
 				'{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
 			));
