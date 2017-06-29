@@ -77,12 +77,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntryProfile()
 	{
-		$oIosManager = new Managers\Ios();
+		$oIosManager = new Managers\Ios($this);
 		
-		$oApiIntegrator = new \Aurora\Modules\Core\Managers\Integrator();
-		$oAccount = $oApiIntegrator->getAuthenticatedDefaultAccount();
-		
-		$mResultProfile = $oIosManager && $oAccount ? $oIosManager->generateXMLProfile($oAccount) : false;
+		$oUser = \Aurora\System\Api::getAuthenticatedUser();
+
+		$mResultProfile = $oIosManager && $oUser ? $oIosManager->generateXMLProfile($oUser) : false;
 		
 		if (!$mResultProfile)
 		{

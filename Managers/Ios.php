@@ -14,32 +14,21 @@ namespace Aurora\Modules\Ios\Managers;
 class Ios extends \Aurora\System\Managers\AbstractManager
 {
 	/*
-	 * @var $oApiUsersManager CApiUsersManager
+	 * @var $oDavModule \Aurora\Modules\Dav\Module
 	 */
-	private $oApiUsersManager;
-
-	/*
-	 * @var $oApiDavManager CApiDavManager
-	 */
-	private $oApiDavManager;
+	private $oDavModule;
 
 	/**
-	 * @param \Aurora\System\Managers\GlobalManager &$oManager
-	 * @param string $sForcedStorage
+	 * @param \Aurora\System\Module\AbstractModule $oModule
 	 */
-	public function __construct($sForcedStorage = '')
+	public function __construct($oModule = null)
 	{
-		parent::__construct('');
-
-		/*
-		 * @var $oApiUsersManager CApiUsersManager
-		 */
-//		$this->oApiUsersManager =\Aurora\System\Api::GetSystemManager('users');
+		parent::__construct($oModule);
 
 		/*
 		 * @var $oApiDavManager CApiDavManager
 		 */
-		$this->oApiDavManager =\Aurora\System\Api::Manager('dav');
+		$this->oDavModule = \Aurora\System\Api::GetModule('Dav');
 	}
 
 	/**
@@ -85,48 +74,56 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
 		$oSettings =\Aurora\System\Api::GetSettings();
+		
+		$oServer = $oAccount->GetServer();
 
-		$sIncomingServer = $oAccount->IncomingServer;
-		$iIncomingPort = $oAccount->IncomingPort;
+		$sIncomingServer = $oServer->IncomingServer;
+		$iIncomingPort = $oServer->IncomingPort;
 
 		if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1')
 		{
-			$sIncomingServer = $oSettings->GetConf('WebMail/ExternalHostNameOfLocalImap');
+			$sIncomingServer = $oSettings->GetConf('ExternalHostNameOfLocalImap', $sIncomingServer);
 			
-			$aParsedUrl = parse_url($sIncomingServer);
-			if (isset($aParsedUrl['host']))
+			if (!empty($sIncomingServer))
 			{
-				$sIncomingServer = $aParsedUrl['host'];
-			}
-			if (isset($aParsedUrl['port']))
-			{
-				$iIncomingPort = $aParsedUrl['port'];
+				$aParsedUrl = parse_url($sIncomingServer);
+				if (isset($aParsedUrl['host']))
+				{
+					$sIncomingServer = $aParsedUrl['host'];
+				}
+				if (isset($aParsedUrl['port']))
+				{
+					$iIncomingPort = $aParsedUrl['port'];
+				}
 			}
 		}
 
-		$sOutgoingServer = $oAccount->OutgoingServer;
-		$iOutgoingPort = $oAccount->OutgoingPort;
+		$sOutgoingServer = $oServer->IncomingServer;
+		$iOutgoingPort = $oServer->IncomingPort;
 
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
-			$sOutgoingServer = $oSettings->GetConf('WebMail/ExternalHostNameOfLocalSmtp');
+			$sOutgoingServer = $oSettings->GetConf('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
 			
-			$aParsedUrl = parse_url($sOutgoingServer);
-			if (isset($aParsedUrl['host']))
+			if (!empty($sOutgoingServer))
 			{
-				$sOutgoingServer = $aParsedUrl['host'];
-			}
-			if (isset($aParsedUrl['port']))
-			{
-				$iOutgoingPort = $aParsedUrl['port'];
+				$aParsedUrl = parse_url($sOutgoingServer);
+				if (isset($aParsedUrl['host']))
+				{
+					$sOutgoingServer = $aParsedUrl['host'];
+				}
+				if (isset($aParsedUrl['port']))
+				{
+					$iOutgoingPort = $aParsedUrl['port'];
+				}
 			}
 		}
+		
 		if (empty($sIncomingServer) || empty($sOutgoingServer))
 		{
 			return false;
 		}
 
-		$oSettings =&\Aurora\System\Api::GetSettings();
 		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
 		$aEmail = array(
 			'PayloadVersion'					=> 1,
@@ -165,12 +162,12 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
-	 * @param \CAccount $oAccount
+	 * @param \CUser $oUser
 	 * @param bool $bIsDemo Default false
 	 * 
 	 * @return DOMElement
 	 */
-	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
+	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
 	{
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
@@ -183,12 +180,12 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
 			'PayloadDescription'		=> 'Configures CalDAV Account',
 			'CalDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Calendars',
-			'CalDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
-			'CalDAVUsername'			=> $oAccount->Email,
-			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
-			'CalDAVUseSSL'				=> $this->oApiDavManager ? $this->oApiDavManager->isUseSsl($oAccount) : '',
-			'CalDAVPort'				=> $this->oApiDavManager ? $this->oApiDavManager->getServerPort($oAccount) : '',
-			'CalDAVPrincipalURL'		=> $this->oApiDavManager ? $this->oApiDavManager->getPrincipalUrl($oAccount) : '',
+			'CalDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
+			'CalDAVUsername'			=> $oUser->Public,
+			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
+			'CalDAVUseSSL'				=> $this->oDavModule ? $this->oDavModule->IsSsl() : '',
+			'CalDAVPort'				=> $this->oDavModule ? $this->oDavModule->GetServerPort() : '',
+			'CalDAVPrincipalURL'		=> $this->oDavModule ? $this->oDavModule->GetPrincipalUrl() : '',
 		);
 
 		return $this->_generateDict($oXmlDocument, $aCaldav);
@@ -198,13 +195,13 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
-	 * @param \CAccount $oAccount
+	 * @param \CUser $oUser
 	 * @param bool $bIsDemo Default false
 	 * 
 	 * @return DOMElement
 	 */
 	
-	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
+	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
 	{
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
@@ -217,28 +214,28 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
 			'PayloadDescription'		=> 'Configures CardDAV Account',
 			'CardDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Contacts',
-			'CardDAVHostName'			=> $this->oApiDavManager ? $this->oApiDavManager->getServerHost($oAccount) : '',
-			'CardDAVUsername'			=> $oAccount->Email,
-			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
-			'CardDAVUseSSL'				=> $this->oApiDavManager ? $this->oApiDavManager->isUseSsl($oAccount) : '',
-			'CardDAVPort'				=> $this->oApiDavManager ? $this->oApiDavManager->getServerPort($oAccount) : '',
-			'CardDAVPrincipalURL'		=> $this->oApiDavManager ? $this->oApiDavManager->getPrincipalUrl($oAccount) : '',
+			'CardDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
+			'CardDAVUsername'			=> $oUser->PublicId,
+			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
+			'CardDAVUseSSL'				=> $this->oDavModule ? $this->oDavModule->IsSsl() : '',
+			'CardDAVPort'				=> $this->oDavModule ? $this->oDavModule->GetServerPort() : '',
+			'CardDAVPrincipalURL'		=> $this->oDavModule ? $this->oDavModule->GetPrincipalUrl() : '',
 		);
 
 		return $this->_generateDict($oXmlDocument, $aCarddav);
 	}
 
 	/**
-	 * @param \CAccount $oAccount
+	 * @param \CUser $oUser
 	 * @return string
 	 */
-	public function generateXMLProfile($oAccount)
+	public function generateXMLProfile($oUser)
 	{
 		$mResult = false;
 
-		if ($oAccount)
+		if ($oUser)
 		{
-			$oDomImplementation = new DOMImplementation();
+			$oDomImplementation = new \DOMImplementation();
 			$oDocumentType = $oDomImplementation->createDocumentType(
 				'plist',
 				'-//Apple//DTD PLIST 1.0//EN',
@@ -253,7 +250,8 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			$oPlist = $oXmlDocument->createElement('plist');
 			$oPlist->setAttribute('version', '1.0');
 
-			$sPayloadId = $this->oApiDavManager ? 'afterlogic.'.$this->oApiDavManager->getServerHost($oAccount) : '';
+			$sPayloadId = $this->oDavModule ? 'afterlogic.'.$this->oDavModule->GetServerHost() : '';
+			
 			$oSettings =&\Aurora\System\Api::GetSettings();
 			$aPayload = array(
 				'PayloadVersion'			=> 1,
@@ -273,21 +271,14 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 
 			if (!$bIsDemo)
 			{
-				$aInfo = $this->oApiUsersManager->getUserAccounts($oAccount->IdUser);
-				if (is_array($aInfo) && 0 < count($aInfo))
+				$oMailModule = \Aurora\System\Api::GetModule('Mail');
+				$aAccounts = $oMailModule->GetAccounts($oUser->EntityId);
+				if (is_array($aAccounts) && 0 < count($aAccounts))
 				{
-					foreach (array_keys($aInfo) as $iIdAccount)
+					foreach ($aAccounts as $oAccountItem)
 					{
-						if ($oAccount->IdAccount === $iIdAccount)
-						{
-							$oAccountItem = $oAccount;
-						}
-						else
-						{
-							$oAccountItem = $this->oApiUsersManager->getAccountById($iIdAccount);
-						}
-
 						$oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
+						
 						if ($oEmailDictElement === false)
 						{
 							return false;
@@ -308,11 +299,11 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			}
 
 			// Calendars
-			$oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo);
+			$oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
 			$oArrayElement->appendChild($oCaldavDictElement);
 
 			// Contacts
-			$oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo);
+			$oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
 			$oArrayElement->appendChild($oCarddavDictElement);
 
 			$oDictElement = $this->_generateDict($oXmlDocument, $aPayload);
