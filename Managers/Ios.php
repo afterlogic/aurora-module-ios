@@ -147,12 +147,12 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
 			'OutgoingMailServerUseSSL'			=> 465 === $iIncomingPort,
-			'OutgoingMailServerUsername'		=> 0 === strlen($oAccount->OutgoingLogin)
-				? $oAccount->IncomingLogin : $oAccount->OutgoingLogin,
-			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? (0 === strlen($oAccount->OutgoingPassword)
-				? $oAccount->IncomingPassword : $oAccount->OutgoingPassword) : ''),
-			'OutgoingMailServerAuthentication'	=> $oAccount->OutgoingUseAuth
-				? 'EmailAuthPassword' : 'EmailAuthNone',
+			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials 
+				? $oServer->SmtpLogin : $oAccount->IncomingLogin,
+			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
+				? $oServer->SmtpPassword : $oAccount->IncomingPassword) : ''),
+			'OutgoingMailServerAuthentication'	=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication
+				? 'EmailAuthNone' : 'EmailAuthPassword',
 		);
 
 		return $this->_generateDict($oXmlDocument, $aEmail);
