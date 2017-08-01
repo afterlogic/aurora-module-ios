@@ -49,17 +49,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
 			
 			$sResult = strtr($sResult, array(
-				'{{IOS/HELLO}}' => $this->i18N('HELLO', $iUserId),
-				'{{IOS/DESC_P1}}' => $this->i18N('DESC_P1', $iUserId),
-				'{{IOS/DESC_P2}}' => $this->i18N('DESC_P2', $iUserId),
-				'{{IOS/DESC_P3}}' => $this->i18N('DESC_P3', $iUserId),
-				'{{IOS/DESC_P4}}' => $this->i18N('DESC_P4', $iUserId),
-				'{{IOS/DESC_P5}}' => $this->i18N('DESC_P5', $iUserId),
-				'{{IOS/DESC_P6}}' => $this->i18N('DESC_P6', $iUserId),
-				'{{IOS/DESC_P7}}' => $this->i18N('DESC_P7', $iUserId),
-				'{{IOS/DESC_BUTTON_YES}}' => $this->i18N('DESC_BUTTON_YES', $iUserId),
-				'{{IOS/DESC_BUTTON_SKIP}}' => $this->i18N('DESC_BUTTON_SKIP', $iUserId),
-				'{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN', $iUserId),
+				'{{IOS/HELLO}}' => $this->i18N('HELLO'),
+				'{{IOS/DESC_P1}}' => $this->i18N('DESC_P1'),
+				'{{IOS/DESC_P2}}' => $this->i18N('DESC_P2'),
+				'{{IOS/DESC_P3}}' => $this->i18N('DESC_P3'),
+				'{{IOS/DESC_P4}}' => $this->i18N('DESC_P4'),
+				'{{IOS/DESC_P5}}' => $this->i18N('DESC_P5'),
+				'{{IOS/DESC_P6}}' => $this->i18N('DESC_P6'),
+				'{{IOS/DESC_P7}}' => $this->i18N('DESC_P7'),
+				'{{IOS/DESC_BUTTON_YES}}' => $this->i18N('DESC_BUTTON_YES'),
+				'{{IOS/DESC_BUTTON_SKIP}}' => $this->i18N('DESC_BUTTON_SKIP'),
+				'{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN'),
 				'{{AppVersion}}' => AURORA_APP_VERSION,
 				'{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
 			));
