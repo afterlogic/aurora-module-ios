@@ -66,7 +66,7 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
-	 * @param \CAccount $oAccount
+	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount
 	 * @param bool $bIsDemo Default false
 	 * 
 	 * @return boolean
