@@ -60,7 +60,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'{{IOS/DESC_BUTTON_YES}}' => $this->i18N('DESC_BUTTON_YES'),
 				'{{IOS/DESC_BUTTON_SKIP}}' => $this->i18N('DESC_BUTTON_SKIP'),
 				'{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN'),
-				'{{AppVersion}}' => AURORA_APP_VERSION,
+				'{{AppVersion}}' => AU_APP_VERSION,
 				'{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
 			));
 		}
