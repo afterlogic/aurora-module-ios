@@ -162,7 +162,7 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
-	 * @param \CUser $oUser
+	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 * @param bool $bIsDemo Default false
 	 * 
 	 * @return DOMElement
@@ -195,7 +195,7 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
-	 * @param \CUser $oUser
+	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 * @param bool $bIsDemo Default false
 	 * 
 	 * @return DOMElement
@@ -226,7 +226,7 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param \CUser $oUser
+	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 * @return string
 	 */
 	public function generateXMLProfile($oUser)
