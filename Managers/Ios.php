@@ -181,7 +181,7 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			'PayloadDescription'		=> 'Configures CalDAV Account',
 			'CalDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Calendars',
 			'CalDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
-			'CalDAVUsername'			=> $oUser->Public,
+			'CalDAVUsername'			=> $oUser->PublicId,
 			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
 			'CalDAVUseSSL'				=> $this->oDavModule ? $this->oDavModule->IsSsl() : '',
 			'CalDAVPort'				=> $this->oDavModule ? $this->oDavModule->GetServerPort() : '',
@@ -291,10 +291,6 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 						unset($oAccountItem);
 						unset($oEmailDictElement);
 					}
-				}
-				else
-				{
-					return false;
 				}
 			}
 
