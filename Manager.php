@@ -9,9 +9,9 @@
  */
 
 
-namespace Aurora\Modules\Ios\Managers;
+namespace Aurora\Modules\Ios;
 
-class Ios extends \Aurora\System\Managers\AbstractManager
+class Manager extends \Aurora\System\Managers\AbstractManager
 {
 	/*
 	 * @var $oDavModule \Aurora\Modules\Dav\Module
@@ -272,35 +272,43 @@ class Ios extends \Aurora\System\Managers\AbstractManager
 			if (!$bIsDemo)
 			{
 				$oMailModule = \Aurora\System\Api::GetModule('Mail');
-				$aAccounts = $oMailModule->GetAccounts($oUser->EntityId);
-				if (is_array($aAccounts) && 0 < count($aAccounts))
+				if ($oMailModule)
 				{
-					foreach ($aAccounts as $oAccountItem)
+					$aAccounts = $oMailModule->GetAccounts($oUser->EntityId);
+					if (is_array($aAccounts) && 0 < count($aAccounts))
 					{
-						$oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
-						
-						if ($oEmailDictElement === false)
+						foreach ($aAccounts as $oAccountItem)
 						{
-							return false;
-						}
-						else
-						{
-							$oArrayElement->appendChild($oEmailDictElement);
-						}
+							$oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
 
-						unset($oAccountItem);
-						unset($oEmailDictElement);
+							if ($oEmailDictElement === false)
+							{
+								return false;
+							}
+							else
+							{
+								$oArrayElement->appendChild($oEmailDictElement);
+							}
+
+							unset($oAccountItem);
+							unset($oEmailDictElement);
+						}
 					}
 				}
 			}
 
-			// Calendars
-			$oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
-			$oArrayElement->appendChild($oCaldavDictElement);
+			
+			$oMobileSyncModule = \Aurora\System\Api::GetModule('MobileSync');
+			if ($oMobileSyncModule)
+			{
+				// Calendars
+				$oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
+				$oArrayElement->appendChild($oCaldavDictElement);
 
-			// Contacts
-			$oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
-			$oArrayElement->appendChild($oCarddavDictElement);
+				// Contacts
+				$oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
+				$oArrayElement->appendChild($oCarddavDictElement);
+			}
 
 			$oDictElement = $this->_generateDict($oXmlDocument, $aPayload);
 			$oPayloadContentElement = $oXmlDocument->createElement('key', 'PayloadContent');

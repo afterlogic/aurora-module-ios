@@ -77,7 +77,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntryProfile()
 	{
-		$oIosManager = new Managers\Ios($this);
+		$oIosManager = new Manager($this);
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 
