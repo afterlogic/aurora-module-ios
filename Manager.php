@@ -267,9 +267,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 			$oArrayElement = $oXmlDocument->createElement('array');
 
-			$bIsDemo = false;
-
-			if (!$bIsDemo)
+			$oDemoModePlugin = \Aurora\System\Api::GetModule('DemoModePlugin');
+			if (!($oDemoModePlugin && $oDemoModePlugin->IsDemo()))
 			{
 				$oMailModule = \Aurora\System\Api::GetModule('Mail');
 				if ($oMailModule)
@@ -299,7 +298,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 			
 			$oMobileSyncModule = \Aurora\System\Api::GetModule('MobileSync');
-			if ($oMobileSyncModule)
+			if ($oMobileSyncModule && !$oMobileSyncModule->getConfig('Disabled', false))
 			{
 				// Calendars
 				$oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
