@@ -268,7 +268,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$oArrayElement = $oXmlDocument->createElement('array');
 
 			$oDemoModePlugin = \Aurora\System\Api::GetModule('DemoModePlugin');
-			if (!($oDemoModePlugin && $oDemoModePlugin->IsDemo()))
+			if (!($oDemoModePlugin && $oDemoModePlugin->IsDemoUser()))
 			{
 				$oMailModule = \Aurora\System\Api::GetModule('Mail');
 				if ($oMailModule)
