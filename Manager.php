@@ -141,13 +141,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				? $oAccount->Email : $oAccount->FriendlyName,
 			'IncomingMailServerHostName'		=> $sIncomingServer,
 			'IncomingMailServerPortNumber'		=> $iIncomingPort,
-			'IncomingMailServerUseSSL'			=> 993 === $iIncomingPort,
+			'IncomingMailServerUseSSL'			=> $oServer->IncomingUseSsl,
 			'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
 			'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
 			'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
-			'OutgoingMailServerUseSSL'			=> 465 === $iIncomingPort,
+			'OutgoingMailServerUseSSL'			=> $oServer->OutgoingUseSsl,
 			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials 
 				? $oServer->SmtpLogin : $oAccount->IncomingLogin,
 			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
