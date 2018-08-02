@@ -47,8 +47,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 		if (0 < $iUserId)
 		{
-			@\setcookie('skip_ios', '1', \time() + 3600 * 3600, '/', null, null, true);
-			
 			$sResult = strtr($sResult, array(
 				'{{IOS/HELLO}}' => $this->i18N('HELLO'),
 				'{{IOS/DESC_P1}}' => $this->i18N('DESC_P1'),
