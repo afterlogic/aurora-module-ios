@@ -24,8 +24,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init() 
 	{
-		parent::init();
-		
 		$this->AddEntries(array(
 				'ios' => 'EntryIos',
 				'profile' => 'EntryProfile'
