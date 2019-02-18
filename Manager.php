@@ -83,7 +83,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1')
 		{
-			$sIncomingServer = $oSettings->GetConf('ExternalHostNameOfLocalImap', $sIncomingServer);
+			$sIncomingServer = $oSettings->GetValue('ExternalHostNameOfLocalImap', $sIncomingServer);
 			
 			if (!empty($sIncomingServer))
 			{
@@ -104,7 +104,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
-			$sOutgoingServer = $oSettings->GetConf('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
+			$sOutgoingServer = $oSettings->GetValue('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
 			
 			if (!empty($sOutgoingServer))
 			{
@@ -132,7 +132,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadType'						=> 'com.apple.mail.managed',
 			'PayloadIdentifier'					=> $sPayloadId.'.email',
 			'PayloadDisplayName'				=> 'Email Account',
-			'PayloadOrganization'				=> $oSettings->GetConf('SiteName'),
+			'PayloadOrganization'				=> $oSettings->SiteName,
 			'PayloadDescription'				=> 'Configures email account',
 			'EmailAddress'						=> $oAccount->Email,
 			'EmailAccountType'					=> 'EmailTypeIMAP',
@@ -178,9 +178,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadType'				=> 'com.apple.caldav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.caldav',
 			'PayloadDisplayName'		=> 'CalDAV Account',
-			'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
+			'PayloadOrganization'		=> $oSettings->SiteName,
 			'PayloadDescription'		=> 'Configures CalDAV Account',
-			'CalDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Calendars',
+			'CalDAVAccountDescription'	=> $oSettings->SiteName.' Calendars',
 			'CalDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
 			'CalDAVUsername'			=> $oUser->PublicId,
 			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
@@ -212,9 +212,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadType'				=> 'com.apple.carddav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.carddav',
 			'PayloadDisplayName'		=> 'CardDAV Account',
-			'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
+			'PayloadOrganization'		=> $oSettings->SiteName,
 			'PayloadDescription'		=> 'Configures CardDAV Account',
-			'CardDAVAccountDescription'	=> $oSettings->GetConf('SiteName').' Contacts',
+			'CardDAVAccountDescription'	=> $oSettings->SiteName.' Contacts',
 			'CardDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
 			'CardDAVUsername'			=> $oUser->PublicId,
 			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
@@ -260,9 +260,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				'PayloadType'				=> 'Configuration',
 				'PayloadRemovalDisallowed'	=> false,
 				'PayloadIdentifier'			=> $sPayloadId,
-				'PayloadOrganization'		=> $oSettings->GetConf('SiteName'),
-				'PayloadDescription'		=> $oSettings->GetConf('SiteName').' Mobile',
-				'PayloadDisplayName'		=> $oSettings->GetConf('SiteName').' Mobile Profile',
+				'PayloadOrganization'		=> $oSettings->SiteName,
+				'PayloadDescription'		=> $oSettings->SiteName.' Mobile',
+				'PayloadDisplayName'		=> $oSettings->SiteName.' Mobile Profile',
 //				'ConsentText'				=> 'AfterLogic Profile @ConsentText',
 			);
 
