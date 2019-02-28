@@ -41,7 +41,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		$sResult = \file_get_contents($this->GetPath().'/templates/Ios.html');
 		
-		$oApiIntegrator = \Aurora\Modules\Core\Managers\Integrator::getInstance();
+		$oApiIntegrator = \Aurora\System\Managers\Integrator::getInstance();
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 		if (0 < $iUserId)
 		{
