@@ -75,6 +75,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
 		$oSettings =\Aurora\System\Api::GetSettings();
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		
 		$oServer = $oAccount->GetServer();
 
@@ -132,7 +133,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadType'						=> 'com.apple.mail.managed',
 			'PayloadIdentifier'					=> $sPayloadId.'.email',
 			'PayloadDisplayName'				=> 'Email Account',
-			'PayloadOrganization'				=> $oSettings->SiteName,
+			'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 			'PayloadDescription'				=> 'Configures email account',
 			'EmailAddress'						=> $oAccount->Email,
 			'EmailAccountType'					=> 'EmailTypeIMAP',
@@ -170,7 +171,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
 	{
-		$oSettings =&\Aurora\System\Api::GetSettings();
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
 		$aCaldav = array(
 			'PayloadVersion'			=> 1,
@@ -178,9 +179,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadType'				=> 'com.apple.caldav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.caldav',
 			'PayloadDisplayName'		=> 'CalDAV Account',
-			'PayloadOrganization'		=> $oSettings->SiteName,
+			'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 			'PayloadDescription'		=> 'Configures CalDAV Account',
-			'CalDAVAccountDescription'	=> $oSettings->SiteName.' Calendars',
+			'CalDAVAccountDescription'	=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Calendars',
 			'CalDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
 			'CalDAVUsername'			=> $oUser->PublicId,
 			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
@@ -204,7 +205,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	
 	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
 	{
-		$oSettings =&\Aurora\System\Api::GetSettings();
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
 		$aCarddav = array(
 			'PayloadVersion'			=> 1,
@@ -212,9 +213,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadType'				=> 'com.apple.carddav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.carddav',
 			'PayloadDisplayName'		=> 'CardDAV Account',
-			'PayloadOrganization'		=> $oSettings->SiteName,
+			'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 			'PayloadDescription'		=> 'Configures CardDAV Account',
-			'CardDAVAccountDescription'	=> $oSettings->SiteName.' Contacts',
+			'CardDAVAccountDescription'	=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Contacts',
 			'CardDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
 			'CardDAVUsername'			=> $oUser->PublicId,
 			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
@@ -253,16 +254,16 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 			$sPayloadId = $this->oDavModule ? 'afterlogic.'.$this->oDavModule->GetServerHost() : '';
 			
-			$oSettings =&\Aurora\System\Api::GetSettings();
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 			$aPayload = array(
 				'PayloadVersion'			=> 1,
 				'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
 				'PayloadType'				=> 'Configuration',
 				'PayloadRemovalDisallowed'	=> false,
 				'PayloadIdentifier'			=> $sPayloadId,
-				'PayloadOrganization'		=> $oSettings->SiteName,
-				'PayloadDescription'		=> $oSettings->SiteName.' Mobile',
-				'PayloadDisplayName'		=> $oSettings->SiteName.' Mobile Profile',
+				'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
+				'PayloadDescription'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Mobile',
+				'PayloadDisplayName'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Mobile Profile',
 //				'ConsentText'				=> 'AfterLogic Profile @ConsentText',
 			);
 
