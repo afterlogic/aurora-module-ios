@@ -144,7 +144,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'IncomingMailServerPortNumber'		=> $iIncomingPort,
 			'IncomingMailServerUseSSL'			=> $oServer->IncomingUseSsl,
 			'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
-			'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->IncomingPassword : ''),
+			'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->getPassword() : ''),
 			'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
@@ -152,7 +152,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials 
 				? $oServer->SmtpLogin : $oAccount->IncomingLogin,
 			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
-				? $oServer->SmtpPassword : $oAccount->IncomingPassword) : ''),
+				? $oServer->SmtpPassword : $oAccount->getPassword()) : ''),
 			'OutgoingMailServerAuthentication'	=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication
 				? 'EmailAuthNone' : 'EmailAuthPassword',
 		);
