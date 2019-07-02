@@ -100,8 +100,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 
-		$sOutgoingServer = $oServer->IncomingServer;
-		$iOutgoingPort = $oServer->IncomingPort;
+		$sOutgoingServer = $oServer->OutgoingServer;
+		$iOutgoingPort = $oServer->OutgoingPort;
 
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
