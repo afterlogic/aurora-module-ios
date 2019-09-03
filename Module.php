@@ -36,6 +36,20 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	/***** public functions *****/
 	/**
+	 * 
+	 * @return array
+	 */
+	public function GetSettings()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		
+		return array(
+			'AllowIosProfile' => $this->getConfig('AllowIosProfile', false),
+			'SyncIosAfterLogin' => $this->getConfig('SyncIosAfterLogin', false)
+		);
+	}
+
+	/**
 	 * @ignore
 	 * @return string
 	 */
