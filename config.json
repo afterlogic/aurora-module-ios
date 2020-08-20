@@ -3,6 +3,10 @@
 		false,
 		"bool"
 	],
+    "IncludeInMobile": [
+        true,
+        "bool"
+    ],
     "IncludePasswordInProfile": [
 		true,
 		"bool"
