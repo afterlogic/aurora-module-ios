@@ -76,6 +76,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'{{AppVersion}}' => AU_APP_VERSION,
 				'{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
 			));
+			\Aurora\System\Managers\Response::HtmlOutputHeaders();
 		}
 		else
 		{
