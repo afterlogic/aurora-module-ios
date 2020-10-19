@@ -160,6 +160,23 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		return $this->_generateDict($oXmlDocument, $aEmail);
 	}
 
+	private function getAuthenticatedAccountPassword()
+	{
+		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo();
+
+		$sAccountPassword = '';
+		if (isset($aUserInfo['account']) && isset($aUserInfo['accountType']))
+		{
+			$oAccount = \Aurora\System\Managers\Eav::getInstance()->getEntity($aUserInfo['account'], $aUserInfo['accountType']);
+			if (get_class($oAccount) === $aUserInfo['accountType'])
+			{
+				$sAccountPassword = $oAccount->getPassword();
+			}
+		}
+
+		return $sAccountPassword;
+	}
+
 	/**
 	 * 
 	 * @param type $oXmlDocument
@@ -184,7 +201,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'CalDAVAccountDescription'	=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Calendars',
 			'CalDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
 			'CalDAVUsername'			=> $oUser->PublicId,
-			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
+			'CalDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $this->getAuthenticatedAccountPassword() : ''),
 			'CalDAVUseSSL'				=> $this->oDavModule ? $this->oDavModule->IsSsl() : '',
 			'CalDAVPort'				=> $this->oDavModule ? $this->oDavModule->GetServerPort() : '',
 			'CalDAVPrincipalURL'		=> $this->oDavModule ? $this->oDavModule->GetPrincipalUrl() : '',
@@ -218,7 +235,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'CardDAVAccountDescription'	=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Contacts',
 			'CardDAVHostName'			=> $this->oDavModule ? $this->oDavModule->GetServerHost() : '',
 			'CardDAVUsername'			=> $oUser->PublicId,
-			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oUser->IncomingPassword : ''),
+			'CardDAVPassword'			=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $this->getAuthenticatedAccountPassword() : ''),
 			'CardDAVUseSSL'				=> $this->oDavModule ? $this->oDavModule->IsSsl() : '',
 			'CardDAVPort'				=> $this->oDavModule ? $this->oDavModule->GetServerPort() : '',
 			'CardDAVPrincipalURL'		=> $this->oDavModule ? $this->oDavModule->GetPrincipalUrl() : '',
