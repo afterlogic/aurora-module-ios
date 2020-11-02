@@ -33,10 +33,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $oXmlDocument
 	 * @param array $aPayload
-	 * 
+	 *
 	 * @return DOMElement
 	 */
 	private function _generateDict($oXmlDocument, $aPayload)
@@ -64,19 +64,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount
 	 * @param bool $bIsDemo Default false
-	 * 
+	 *
 	 * @return boolean
 	 */
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
 		$oSettings =\Aurora\System\Api::GetSettings();
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
-		
+
 		$oServer = $oAccount->GetServer();
 
 		$sIncomingServer = $oServer->IncomingServer;
@@ -85,7 +85,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1')
 		{
 			$sIncomingServer = $oSettings->GetValue('ExternalHostNameOfLocalImap', $sIncomingServer);
-			
+
 			if (!empty($sIncomingServer))
 			{
 				$aParsedUrl = parse_url($sIncomingServer);
@@ -106,7 +106,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
 			$sOutgoingServer = $oSettings->GetValue('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
-			
+
 			if (!empty($sOutgoingServer))
 			{
 				$aParsedUrl = parse_url($sOutgoingServer);
@@ -120,7 +120,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				}
 			}
 		}
-		
+
 		if (empty($sIncomingServer) || empty($sOutgoingServer))
 		{
 			return false;
@@ -131,8 +131,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadVersion'					=> 1,
 			'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
 			'PayloadType'						=> 'com.apple.mail.managed',
-			'PayloadIdentifier'					=> $sPayloadId.'.email',
-			'PayloadDisplayName'				=> 'Email Account',
+			'PayloadIdentifier'					=> $sPayloadId.'.' . $oAccount->Email . '.email',
+			'PayloadDisplayName'				=> $oAccount->Email . ' Email Account',
 			'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 			'PayloadDescription'				=> 'Configures email account',
 			'EmailAddress'						=> $oAccount->Email,
@@ -149,7 +149,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
 			'OutgoingMailServerUseSSL'			=> $oServer->OutgoingUseSsl,
-			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials 
+			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
 				? $oServer->SmtpLogin : $oAccount->IncomingLogin,
 			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
 				? $oServer->SmtpPassword : $oAccount->getPassword()) : ''),
@@ -178,12 +178,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
 	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 * @param bool $bIsDemo Default false
-	 * 
+	 *
 	 * @return DOMElement
 	 */
 	private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
@@ -195,7 +195,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
 			'PayloadType'				=> 'com.apple.caldav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.caldav',
-			'PayloadDisplayName'		=> 'CalDAV Account',
+			'PayloadDisplayName'		=> $oUser->PublicId . ' - CalDAV Account',
 			'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 			'PayloadDescription'		=> 'Configures CalDAV Account',
 			'CalDAVAccountDescription'	=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Calendars',
@@ -211,15 +211,15 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $oXmlDocument
 	 * @param string $sPayloadId
 	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 * @param bool $bIsDemo Default false
-	 * 
+	 *
 	 * @return DOMElement
 	 */
-	
+
 	private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
 	{
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
@@ -229,7 +229,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
 			'PayloadType'				=> 'com.apple.carddav.account',
 			'PayloadIdentifier'			=> $sPayloadId.'.carddav',
-			'PayloadDisplayName'		=> 'CardDAV Account',
+			'PayloadDisplayName'		=> $oUser->PublicId . ' - CardDAV Account',
 			'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 			'PayloadDescription'		=> 'Configures CardDAV Account',
 			'CardDAVAccountDescription'	=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Contacts',
@@ -269,9 +269,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$oPlist = $oXmlDocument->createElement('plist');
 			$oPlist->setAttribute('version', '1.0');
 
-			$sPayloadId = $this->oDavModule ? 'afterlogic.'.$this->oDavModule->GetServerHost() : '';
-			
-		$oModuleManager = \Aurora\System\Api::GetModuleManager();
+			$sPayloadId = $this->oDavModule ? 'afterlogic.'.$this->oDavModule->GetServerHost() . '.' . $oUser->PublicId : '';
+
+			$oModuleManager = \Aurora\System\Api::GetModuleManager();
 			$aPayload = array(
 				'PayloadVersion'			=> 1,
 				'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -280,8 +280,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				'PayloadIdentifier'			=> $sPayloadId,
 				'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
 				'PayloadDescription'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Mobile',
-				'PayloadDisplayName'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Mobile Profile',
-//				'ConsentText'				=> 'Afterlogic Profile @ConsentText',
+				'PayloadDisplayName'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' (' . $oUser->PublicId  . ') Mobile Profile',
 			);
 
 			$oArrayElement = $oXmlDocument->createElement('array');
@@ -320,7 +319,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				$bIsDemo = true;
 			}
 
-			
+
 			$oMobileSyncModule = \Aurora\System\Api::GetModule('MobileSync');
 			if ($oMobileSyncModule && !$oMobileSyncModule->getConfig('Disabled', false))
 			{
