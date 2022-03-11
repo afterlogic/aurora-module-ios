@@ -74,7 +74,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		$oSettings =\Aurora\System\Api::GetSettings();
+		//$oSettings =\Aurora\System\Api::GetSettings();
+		$oMailDecorator = \Aurora\Modules\Mail\Module::Decorator();
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 
 		$oServer = $oAccount->GetServer();
@@ -84,7 +85,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1')
 		{
-			$sIncomingServer = $oSettings->GetValue('ExternalHostNameOfLocalImap', $sIncomingServer);
+			//$sIncomingServer = $oSettings->GetValue('ExternalHostNameOfLocalImap', $sIncomingServer);
+			$sIncomingServer = $oMailDecorator->getConfig('ExternalHostNameOfLocalImap', $sIncomingServer);
 
 			if (!empty($sIncomingServer))
 			{
@@ -105,7 +107,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
-			$sOutgoingServer = $oSettings->GetValue('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
+			//$sOutgoingServer = $oSettings->GetValue('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
+			$sOutgoingServer = $oMailDecorator->getConfig('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
 
 			if (!empty($sOutgoingServer))
 			{
