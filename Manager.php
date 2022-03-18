@@ -85,20 +85,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1')
 		{
-			//$sIncomingServer = $oSettings->GetValue('ExternalHostNameOfLocalImap', $sIncomingServer);
-			$sIncomingServer = $oMailDecorator->getConfig('ExternalHostNameOfLocalImap', $sIncomingServer);
+			$sIncomingServer = $oServer->ExternalAccessImapServer;
 
 			if (!empty($sIncomingServer))
 			{
-				$aParsedUrl = parse_url($sIncomingServer);
-				if (isset($aParsedUrl['host']))
-				{
-					$sIncomingServer = $aParsedUrl['host'];
-				}
-				if (isset($aParsedUrl['port']))
-				{
-					$iIncomingPort = $aParsedUrl['port'];
-				}
+				$iIncomingPort = $oServer->ExternalAccessImapPort;
 			}
 		}
 
@@ -107,20 +98,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
-			//$sOutgoingServer = $oSettings->GetValue('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
-			$sOutgoingServer = $oMailDecorator->getConfig('ExternalHostNameOfLocalSmtp', $sOutgoingServer);
+			$sOutgoingServer = $oServer->ExternalAccessSmtpServer;
 
 			if (!empty($sOutgoingServer))
 			{
-				$aParsedUrl = parse_url($sOutgoingServer);
-				if (isset($aParsedUrl['host']))
-				{
-					$sOutgoingServer = $aParsedUrl['host'];
-				}
-				if (isset($aParsedUrl['port']))
-				{
-					$iOutgoingPort = $aParsedUrl['port'];
-				}
+				$iOutgoingPort = $oServer->ExternalAccessSmtpPort;
 			}
 		}
 
