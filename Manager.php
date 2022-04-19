@@ -150,11 +150,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo();
 
 		$sAccountPassword = '';
+
 		if (isset($aUserInfo['account']) && isset($aUserInfo['accountType']))
 		{
-			$oAccount = \Aurora\System\Managers\Eav::getInstance()->getEntity($aUserInfo['account'], $aUserInfo['accountType']);
-			if (get_class($oAccount) === $aUserInfo['accountType'])
-			{
+			$oAccount = call_user_func_array([$aUserInfo['accountType'], 'find'], [(int)$aUserInfo['account']]);
+			if ($oAccount) {
 				$sAccountPassword = $oAccount->getPassword();
 			}
 		}
@@ -230,7 +230,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param \Aurora\Modules\Core\Classes\User $oUser
+	 * @param \Aurora\Modules\Core\Models\User $oUser
 	 * @return string
 	 */
 	public function generateXMLProfile($oUser)
@@ -277,7 +277,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				$oMailModule = \Aurora\System\Api::GetModule('Mail');
 				if ($oMailModule)
 				{
-					$aAccounts = $oMailModule->GetAccounts($oUser->EntityId);
+					$aAccounts = $oMailModule->GetAccounts($oUser->Id);
 					if (is_array($aAccounts) && 0 < count($aAccounts))
 					{
 						foreach ($aAccounts as $oAccountItem)
