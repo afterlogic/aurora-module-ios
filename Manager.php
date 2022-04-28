@@ -82,6 +82,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		$sIncomingServer = $oServer->IncomingServer;
 		$iIncomingPort = $oServer->IncomingPort;
+		$bIncomingUseSsl = $oServer->IncomingUseSsl;
 
 		if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1')
 		{
@@ -90,11 +91,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			if (!empty($sIncomingServer))
 			{
 				$iIncomingPort = $oServer->ExternalAccessImapPort;
+				$bIncomingUseSsl = $oServer->ExternalAccessImapUseSsl;
 			}
 		}
 
 		$sOutgoingServer = $oServer->OutgoingServer;
 		$iOutgoingPort = $oServer->OutgoingPort;
+		$bOutgoingUseSsl = $oServer->OutgoingUseSsl;
 
 		if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1')
 		{
@@ -103,6 +106,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			if (!empty($sOutgoingServer))
 			{
 				$iOutgoingPort = $oServer->ExternalAccessSmtpPort;
+				$bOutgoingUseSsl = $oServer->ExternalAccessSmtpUseSsl;
 			}
 		}
 
@@ -127,13 +131,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				? $oAccount->Email : $oAccount->FriendlyName,
 			'IncomingMailServerHostName'		=> $sIncomingServer,
 			'IncomingMailServerPortNumber'		=> $iIncomingPort,
-			'IncomingMailServerUseSSL'			=> $oServer->IncomingUseSsl,
+			'IncomingMailServerUseSSL'			=> $bIncomingUseSsl,
 			'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
 			'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->getPassword() : ''),
 			'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
-			'OutgoingMailServerUseSSL'			=> $oServer->OutgoingUseSsl,
+			'OutgoingMailServerUseSSL'			=> $bOutgoingUseSsl,
 			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
 				? $oServer->SmtpLogin : $oAccount->IncomingLogin,
 			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
