@@ -1,42 +1,42 @@
 {
-  "Disabled": [
-    false,
-    "bool"
-  ],
-  "Disabled_Description": [
-    "",
-    "string"
-  ],
-  "IncludeInMobile": [
-    true,
-    "bool"
-  ],
-  "IncludeInMobile_Description": [
-    "",
-    "string"
-  ],
-  "IncludePasswordInProfile": [
-    true,
-    "bool"
-  ],
-  "IncludePasswordInProfile_Description": [
-    "",
-    "string"
-  ],
-  "AllowIosProfile": [
-    true,
-    "bool"
-  ],
-  "AllowIosProfile_Description": [
-    "",
-    "string"
-  ],
-  "SyncIosAfterLogin": [
-    true,
-    "bool"
-  ],
-  "SyncIosAfterLogin_Description": [
-    "",
-    "string"
-  ]
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"Disabled_Description": [
+		"",
+		"string"
+	],
+	"IncludeInMobile": [
+		true,
+		"bool"
+	],
+	"IncludeInMobile_Description": [
+		"",
+		"string"
+	],
+	"IncludePasswordInProfile": [
+		true,
+		"bool"
+	],
+	"IncludePasswordInProfile_Description": [
+		"",
+		"string"
+	],
+	"AllowIosProfile": [
+		true,
+		"bool"
+	],
+	"AllowIosProfile_Description": [
+		"",
+		"string"
+	],
+	"SyncIosAfterLogin": [
+		true,
+		"bool"
+	],
+	"SyncIosAfterLogin_Description": [
+		"",
+		"string"
+	]
 }
