@@ -74,8 +74,6 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
 	{
-		//$oSettings =\Aurora\System\Api::GetSettings();
-		$oMailDecorator = \Aurora\Modules\Mail\Module::Decorator();
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 
 		$oServer = $oAccount->GetServer();
@@ -116,6 +114,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		}
 
 		$bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
+		$sOutgoingMailServerUsername = $oAccount->IncomingLogin;
+		$sOutgoingPassword = $oAccount->getPassword();
+		$sOutgoingMailServerAuthentication = 'EmailAuthPassword';
+		if (class_exists('\Aurora\Modules\Mail\Enums\SmtpAuthType')) {
+			if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials) {
+				$sOutgoingMailServerUsername = $oServer->SmtpLogin;
+				$sOutgoingPassword = $oServer->SmtpLogin;
+			}
+			if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication) {
+				$sOutgoingMailServerAuthentication = 'EmailAuthNone';
+			}
+		}
+
 		$aEmail = array(
 			'PayloadVersion'					=> 1,
 			'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -138,12 +149,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			'OutgoingMailServerHostName'		=> $sOutgoingServer,
 			'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
 			'OutgoingMailServerUseSSL'			=> $bOutgoingUseSsl,
-			'OutgoingMailServerUsername'		=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
-				? $oServer->SmtpLogin : $oAccount->IncomingLogin,
-			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials
-				? $oServer->SmtpPassword : $oAccount->getPassword()) : ''),
-			'OutgoingMailServerAuthentication'	=> $oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication
-				? 'EmailAuthNone' : 'EmailAuthPassword',
+			'OutgoingMailServerUsername'		=> $sOutgoingMailServerUsername,
+			'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $sOutgoingPassword : ''),
+			'OutgoingMailServerAuthentication'	=> $sOutgoingMailServerAuthentication,
 		);
 
 		return $this->_generateDict($oXmlDocument, $aEmail);
