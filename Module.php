@@ -28,7 +28,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         return parent::Decorator();
     }
-    
+
     /***** private functions *****/
     /**
      * Initializes IOS Module.
