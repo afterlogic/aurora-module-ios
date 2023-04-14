@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\Ios;
 
+use Aurora\System\Application;
+
 /**
  * Allows to configure iOS device automatically for syncing mails, contacts and calendars using iOS profile.
  *
@@ -18,6 +20,15 @@ namespace Aurora\Modules\Ios;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
+    }
+    
     /***** private functions *****/
     /**
      * Initializes IOS Module.
@@ -73,7 +84,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                 '{{IOS/DESC_BUTTON_YES}}' => $this->i18N('DESC_BUTTON_YES'),
                 '{{IOS/DESC_BUTTON_SKIP}}' => $this->i18N('DESC_BUTTON_SKIP'),
                 '{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN'),
-                '{{AppVersion}}' => AU_APP_VERSION,
+                '{{AppVersion}}' => Application::GetVersion(),
                 '{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
             ));
             \Aurora\Modules\CoreWebclient\Module::Decorator()->SetHtmlOutputHeaders();

@@ -34,10 +34,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
     /**
      *
-     * @param type $oXmlDocument
+     * @param \DOMDocument $oXmlDocument
      * @param array $aPayload
      *
-     * @return DOMElement
+     * @return \DOMElement
      */
     private function _generateDict($oXmlDocument, $aPayload)
     {
@@ -59,9 +59,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
     /**
      *
-     * @param type $oXmlDocument
+     * @param \DOMDocument $oXmlDocument
      * @param string $sPayloadId
-     * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount
+     * @param \Aurora\Modules\Mail\Models\MailAccount $oAccount
      * @param bool $bIsDemo Default false
      *
      * @return boolean
@@ -164,12 +164,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
     /**
      *
-     * @param type $oXmlDocument
+     * @param \DOMDocument $oXmlDocument
      * @param string $sPayloadId
-     * @param \Aurora\Modules\Core\Classes\User $oUser
+     * @param \Aurora\Modules\Core\Models\User $oUser
      * @param bool $bIsDemo Default false
      *
-     * @return DOMElement
+     * @return \DOMElement
      */
     private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
     {
@@ -197,12 +197,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
     /**
      *
-     * @param type $oXmlDocument
+     * @param \DOMDocument $oXmlDocument
      * @param string $sPayloadId
-     * @param \Aurora\Modules\Core\Classes\User $oUser
+     * @param \Aurora\Modules\Core\Models\User $oUser
      * @param bool $bIsDemo Default false
      *
-     * @return DOMElement
+     * @return \DOMElement
      */
 
     private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
@@ -269,10 +269,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
             $oArrayElement = $oXmlDocument->createElement('array');
 
+            /** @var \Aurora\Modules\DemoModePlugin\Module $oDemoModePlugin */
             $oDemoModePlugin = \Aurora\System\Api::GetModule('DemoModePlugin');
             $bIsDemo = false;
             if (!($oDemoModePlugin && $oDemoModePlugin->IsDemoUser())) {
                 $oMailModule = \Aurora\System\Api::GetModule('Mail');
+                /** @var \Aurora\Modules\Mail\Module $oMailModule */
                 if ($oMailModule) {
                     $aAccounts = $oMailModule->GetAccounts($oUser->Id);
                     if (is_array($aAccounts) && 0 < count($aAccounts)) {
