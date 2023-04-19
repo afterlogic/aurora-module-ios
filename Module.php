@@ -16,6 +16,8 @@ use Aurora\System\Application;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
+ * @property Settings $oModuleSettings
+ *
  * @package Modules
  */
 class Module extends \Aurora\System\Module\AbstractModule
@@ -65,8 +67,8 @@ class Module extends \Aurora\System\Module\AbstractModule
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
         return array(
-            'AllowIosProfile' => $this->getConfig('AllowIosProfile', false),
-            'SyncIosAfterLogin' => $this->getConfig('SyncIosAfterLogin', false)
+            'AllowIosProfile' => $this->oModuleSettings->AllowIosProfile,
+            'SyncIosAfterLogin' => $this->oModuleSettings->SyncIosAfterLogin
         );
     }
 
