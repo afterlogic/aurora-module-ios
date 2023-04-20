@@ -7,10 +7,14 @@
 
 namespace Aurora\Modules\Ios;
 
+use Aurora\System\Api;
+
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
+ *
+ * @property Module $oModule
  */
 class Manager extends \Aurora\System\Managers\AbstractManager
 {
@@ -102,7 +106,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             return false;
         }
 
-        $bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
+        $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
         $sOutgoingMailServerUsername = $oAccount->IncomingLogin;
         $sOutgoingPassword = $oAccount->getPassword();
         $sOutgoingMailServerAuthentication = 'EmailAuthPassword';
@@ -174,7 +178,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
     private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
     {
         $oModuleManager = \Aurora\System\Api::GetModuleManager();
-        $bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
+        $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
         $aCaldav = array(
             'PayloadVersion'			=> 1,
             'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -208,7 +212,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
     private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
     {
         $oModuleManager = \Aurora\System\Api::GetModuleManager();
-        $bIncludePasswordInProfile = $this->GetModule()->getConfig('IncludePasswordInProfile', true);
+        $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
         $aCarddav = array(
             'PayloadVersion'			=> 1,
             'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -296,16 +300,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
                 $bIsDemo = true;
             }
 
-
-            $oMobileSyncModule = \Aurora\System\Api::GetModule('MobileSync');
-            if ($oMobileSyncModule && !$oMobileSyncModule->getConfig('Disabled', false)) {
-                // Calendars
-                $oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
-                $oArrayElement->appendChild($oCaldavDictElement);
-
-                // Contacts
-                $oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
-                $oArrayElement->appendChild($oCarddavDictElement);
+            if (class_exists('\Aurora\Modules\MobileSync\Module')) {
+                // $oMobileSyncModule = Api::GetModule('MobileSync');
+                $oMobileSyncModule = \Aurora\Modules\MobileSync\Module::getInstance();
+                
+                if ($oMobileSyncModule && !$oMobileSyncModule->oModuleSettings->Disabled) {
+                    // Calendars
+                    $oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
+                    $oArrayElement->appendChild($oCaldavDictElement);
+                    
+                    // Contacts
+                    $oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
+                    $oArrayElement->appendChild($oCarddavDictElement);
+                }
             }
 
             $oDictElement = $this->_generateDict($oXmlDocument, $aPayload);
