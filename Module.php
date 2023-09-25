@@ -84,7 +84,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     public function EntryIos()
     {
-        $sResult = \file_get_contents($this->GetPath().'/templates/Ios.html');
+        $sResult = \file_get_contents($this->GetPath() . '/templates/Ios.html');
 
         $oApiIntegrator = \Aurora\System\Managers\Integrator::getInstance();
         $iUserId = \Aurora\System\Api::getAuthenticatedUserId();

@@ -124,7 +124,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             'PayloadVersion'					=> 1,
             'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
             'PayloadType'						=> 'com.apple.mail.managed',
-            'PayloadIdentifier'					=> $sPayloadId.'.' . $oAccount->Email . '.email',
+            'PayloadIdentifier'					=> $sPayloadId . '.' . $oAccount->Email . '.email',
             'PayloadDisplayName'				=> $oAccount->Email . ' Email Account',
             'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
             'PayloadDescription'				=> 'Configures email account',
@@ -183,7 +183,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             'PayloadVersion'			=> 1,
             'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
             'PayloadType'				=> 'com.apple.caldav.account',
-            'PayloadIdentifier'			=> $sPayloadId.'.caldav',
+            'PayloadIdentifier'			=> $sPayloadId . '.caldav',
             'PayloadDisplayName'		=> $oUser->PublicId . ' - CalDAV Account',
             'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
             'PayloadDescription'		=> 'Configures CalDAV Account',
@@ -217,7 +217,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             'PayloadVersion'			=> 1,
             'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
             'PayloadType'				=> 'com.apple.carddav.account',
-            'PayloadIdentifier'			=> $sPayloadId.'.carddav',
+            'PayloadIdentifier'			=> $sPayloadId . '.carddav',
             'PayloadDisplayName'		=> $oUser->PublicId . ' - CardDAV Account',
             'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
             'PayloadDescription'		=> 'Configures CardDAV Account',
@@ -257,7 +257,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             $oPlist = $oXmlDocument->createElement('plist');
             $oPlist->setAttribute('version', '1.0');
 
-            $sPayloadId = $this->oDavModule ? 'afterlogic.'.$this->oDavModule->GetServerHost() . '.' . $oUser->PublicId : '';
+            $sPayloadId = $this->oDavModule ? 'afterlogic.' . $this->oDavModule->GetServerHost() . '.' . $oUser->PublicId : '';
 
             $oModuleManager = \Aurora\System\Api::GetModuleManager();
             $aPayload = array(
@@ -268,7 +268,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
                 'PayloadIdentifier'			=> $sPayloadId,
                 'PayloadOrganization'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
                 'PayloadDescription'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' Mobile',
-                'PayloadDisplayName'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' (' . $oUser->PublicId  . ') Mobile Profile',
+                'PayloadDisplayName'		=> $oModuleManager->getModuleConfigValue('Core', 'SiteName') . ' (' . $oUser->PublicId . ') Mobile Profile',
             );
 
             $oArrayElement = $oXmlDocument->createElement('array');
@@ -303,12 +303,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             if (class_exists('\Aurora\Modules\MobileSync\Module')) {
                 // $oMobileSyncModule = Api::GetModule('MobileSync');
                 $oMobileSyncModule = \Aurora\Modules\MobileSync\Module::getInstance();
-                
+
                 if ($oMobileSyncModule && !$oMobileSyncModule->oModuleSettings->Disabled) {
                     // Calendars
                     $oCaldavDictElement = $this->_generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
                     $oArrayElement->appendChild($oCaldavDictElement);
-                    
+
                     // Contacts
                     $oCarddavDictElement = $this->_generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo);
                     $oArrayElement->appendChild($oCarddavDictElement);
