@@ -117,23 +117,19 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     public function EntryProfile()
     {
-        $mResultProfile = false;
         $oIosManager = new Manager($this);
+
         $oUser = \Aurora\System\Api::getAuthenticatedUser();
 
-        if ($oIosManager && $oUser) {
-            try {
-                $mResultProfile = $oIosManager->generateXMLProfile($oUser);
-            } catch (\Exception $oException) {
-                \Aurora\Api::Log('Can\'t generate iOS profile', \Aurora\System\Enums\LogLevel::Error);
-            }
+        $mResultProfile = false;
+        if (!$oUser) {
+            \Aurora\System\Api::Log('Ios profile error: user is not authorized!');
         } else {
-            \Aurora\Api::Log('Can\'t create iOS profile for user', \Aurora\System\Enums\LogLevel::Error);
+            $mResultProfile =  $oIosManager->generateXMLProfile($oUser);
         }
 
         if (!$mResultProfile) {
-            \Aurora\Api::Log('Can\'t generate iOS profile');
-            \Aurora\System\Api::Location('./?ios/error');
+            \Aurora\System\Api::Location('./?IOS/Error');
         } else {
             \header('Content-type: application/x-apple-aspen-config; chatset=utf-8');
             \header('Content-Disposition: attachment; filename="afterlogic.mobileconfig"');
