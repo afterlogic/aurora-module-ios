@@ -30,10 +30,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
     {
         parent::__construct($oModule);
 
-        /*
-         * @var $oApiDavManager CApiDavManager
-         */
-        $this->oDavModule = \Aurora\System\Api::GetModule('Dav');
+        $this->oDavModule = Api::GetModule('Dav');
     }
 
     /**
@@ -68,11 +65,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
      * @param \Aurora\Modules\Mail\Models\MailAccount $oAccount
      * @param bool $bIsDemo Default false
      *
-     * @return boolean
+     * @return \DOMElement|bool
      */
     private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
     {
-        $oModuleManager = \Aurora\System\Api::GetModuleManager();
+        Api::Log('Generating email part for account: ' . $oAccount->Email);
+
+        $oModuleManager = Api::GetModuleManager();
 
         $oServer = $oAccount->GetServer();
 
@@ -103,6 +102,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
         }
 
         if (empty($sIncomingServer) || empty($sOutgoingServer)) {
+            Api::Log('Error: IncomingServer or OutgoingServer is empty');
             return false;
         }
 
@@ -152,7 +152,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
     private function getAuthenticatedAccountPassword()
     {
-        $aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo();
+        $aUserInfo = Api::getAuthenticatedUserInfo();
 
         $sAccountPassword = '';
 
@@ -177,7 +177,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
      */
     private function _generateCaldavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
     {
-        $oModuleManager = \Aurora\System\Api::GetModuleManager();
+        Api::Log('Generating caldav part for user: ' . $oUser->PublicId);
+
+        $oModuleManager = Api::GetModuleManager();
         $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
         $aCaldav = array(
             'PayloadVersion'			=> 1,
@@ -211,7 +213,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
     private function _generateCarddavDict($oXmlDocument, $sPayloadId, $oUser, $bIsDemo = false)
     {
-        $oModuleManager = \Aurora\System\Api::GetModuleManager();
+        Api::Log('Generating carddav part for user: ' . $oUser->PublicId);
+
+        $oModuleManager = Api::GetModuleManager();
         $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
         $aCarddav = array(
             'PayloadVersion'			=> 1,
@@ -239,6 +243,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
      */
     public function generateXMLProfile($oUser)
     {
+        Api::Log('Generating Ios profile.');
+
         $mResult = false;
 
         if ($oUser) {
@@ -259,7 +265,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
             $sPayloadId = $this->oDavModule ? 'afterlogic.' . $this->oDavModule->GetServerHost() . '.' . $oUser->PublicId : '';
 
-            $oModuleManager = \Aurora\System\Api::GetModuleManager();
+            $oModuleManager = Api::GetModuleManager();
             $aPayload = array(
                 'PayloadVersion'			=> 1,
                 'PayloadUUID'				=> \Sabre\DAV\UUIDUtil::getUUID(),
@@ -274,10 +280,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
             $oArrayElement = $oXmlDocument->createElement('array');
 
             /** @var \Aurora\Modules\DemoModePlugin\Module $oDemoModePlugin */
-            $oDemoModePlugin = \Aurora\System\Api::GetModule('DemoModePlugin');
+            $oDemoModePlugin = Api::GetModule('DemoModePlugin');
             $bIsDemo = false;
             if (!($oDemoModePlugin && $oDemoModePlugin->IsDemoUser())) {
-                $oMailModule = \Aurora\System\Api::GetModule('Mail');
+                $oMailModule = Api::GetModule('Mail');
                 /** @var \Aurora\Modules\Mail\Module $oMailModule */
                 if ($oMailModule) {
                     $aAccounts = $oMailModule->GetAccounts($oUser->Id);
@@ -286,6 +292,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
                             $oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
 
                             if ($oEmailDictElement === false) {
+                                Api::Log('Error: incorrect email part is for account: ' . $oAccountItem->Email);
                                 return false;
                             } else {
                                 $oArrayElement->appendChild($oEmailDictElement);
