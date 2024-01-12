@@ -18,8 +18,8 @@ use Aurora\System\Api;
  */
 class Manager extends \Aurora\System\Managers\AbstractManager
 {
-    /*
-     * @var $oDavModule \Aurora\Modules\Dav\Module
+    /**
+     * @var \Aurora\Modules\Dav\Module
      */
     private $oDavModule;
 
@@ -279,32 +279,34 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
             $oArrayElement = $oXmlDocument->createElement('array');
 
-            /** @var \Aurora\Modules\DemoModePlugin\Module $oDemoModePlugin */
-            $oDemoModePlugin = Api::GetModule('DemoModePlugin');
             $bIsDemo = false;
-            if (!($oDemoModePlugin && $oDemoModePlugin->IsDemoUser())) {
-                $oMailModule = Api::GetModule('Mail');
-                /** @var \Aurora\Modules\Mail\Module $oMailModule */
-                if ($oMailModule) {
-                    $aAccounts = $oMailModule->GetAccounts($oUser->Id);
-                    if (is_array($aAccounts) && 0 < count($aAccounts)) {
-                        foreach ($aAccounts as $oAccountItem) {
-                            $oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
 
-                            if ($oEmailDictElement === false) {
-                                Api::Log('Error: incorrect email part is for account: ' . $oAccountItem->Email);
-                                return false;
-                            } else {
-                                $oArrayElement->appendChild($oEmailDictElement);
-                            }
+            if (class_exists('\Aurora\Modules\DemoModePlugin\Module')) {
+                $oDemoModePlugin = \Aurora\Modules\DemoModePlugin\Module::getInstance();
+                if ($oDemoModePlugin && $oDemoModePlugin->IsDemoUser()) {
+                    $bIsDemo = true;
+                }
+            }
 
-                            unset($oAccountItem);
-                            unset($oEmailDictElement);
+            $oMailModule = Api::GetModule('Mail');
+            /** @var \Aurora\Modules\Mail\Module $oMailModule */
+            if ($oMailModule && !$bIsDemo) {
+                $aAccounts = $oMailModule->GetAccounts($oUser->Id);
+                if (is_array($aAccounts) && 0 < count($aAccounts)) {
+                    foreach ($aAccounts as $oAccountItem) {
+                        $oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
+
+                        if ($oEmailDictElement === false) {
+                            Api::Log('Error: incorrect email part is for account: ' . $oAccountItem->Email);
+                            return false;
+                        } else {
+                            $oArrayElement->appendChild($oEmailDictElement);
                         }
+
+                        unset($oAccountItem);
+                        unset($oEmailDictElement);
                     }
                 }
-            } else {
-                $bIsDemo = true;
             }
 
             if (class_exists('\Aurora\Modules\MobileSync\Module')) {
