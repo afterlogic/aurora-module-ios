@@ -67,8 +67,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
      *
      * @return \DOMElement|bool
      */
-    private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
+    private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)  // @phpstan-ignore-line
     {
+        if (!class_exists('\Aurora\Modules\Mail\Models\MailAccount')) {
+            return false;
+        }
+
         Api::Log('Generating email part for account: ' . $oAccount->Email);
 
         $oModuleManager = Api::GetModuleManager();
@@ -288,23 +292,25 @@ class Manager extends \Aurora\System\Managers\AbstractManager
                 }
             }
 
-            $oMailModule = Api::GetModule('Mail');
-            /** @var \Aurora\Modules\Mail\Module $oMailModule */
-            if ($oMailModule && !$bIsDemo) {
-                $aAccounts = $oMailModule->GetAccounts($oUser->Id);
-                if (is_array($aAccounts) && 0 < count($aAccounts)) {
-                    foreach ($aAccounts as $oAccountItem) {
-                        $oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
+            if (class_exists('\Aurora\Modules\Mail\Module')) {
+                $oMailModule = Api::GetModule('Mail');
+                /** @var \Aurora\Modules\Mail\Module $oMailModule */
+                if ($oMailModule && !$bIsDemo) {
+                    $aAccounts = $oMailModule->GetAccounts($oUser->Id);
+                    if (is_array($aAccounts) && 0 < count($aAccounts)) {
+                        foreach ($aAccounts as $oAccountItem) {
+                            $oEmailDictElement = $this->_generateEmailDict($oXmlDocument, $sPayloadId, $oAccountItem, $bIsDemo);
 
-                        if ($oEmailDictElement === false) {
-                            Api::Log('Error: incorrect email part is for account: ' . $oAccountItem->Email);
-                            return false;
-                        } else {
-                            $oArrayElement->appendChild($oEmailDictElement);
+                            if ($oEmailDictElement === false) {
+                                Api::Log('Error: incorrect email part is for account: ' . $oAccountItem->Email);
+                                return false;
+                            } else {
+                                $oArrayElement->appendChild($oEmailDictElement);
+                            }
+
+                            unset($oAccountItem);
+                            unset($oEmailDictElement);
                         }
-
-                        unset($oAccountItem);
-                        unset($oEmailDictElement);
                     }
                 }
             }
