@@ -62,96 +62,98 @@ class Manager extends \Aurora\System\Managers\AbstractManager
      *
      * @param \DOMDocument $oXmlDocument
      * @param string $sPayloadId
-     * @param \Aurora\Modules\Mail\Models\MailAccount $oAccount
+     * @param \Aurora\System\Classes\Account $oAccount
      * @param bool $bIsDemo Default false
      *
      * @return \DOMElement|bool
      */
-    private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)  // @phpstan-ignore-line
+    private function _generateEmailDict($oXmlDocument, $sPayloadId, $oAccount, $bIsDemo = false)
     {
-        if (!class_exists('\Aurora\Modules\Mail\Models\MailAccount')) {
-            return false;
-        }
+        $result = false;
 
-        Api::Log('Generating email part for account: ' . $oAccount->Email);
+        if (class_exists('\Aurora\Modules\Mail\Models\MailAccount')) {
+            /** @var \Aurora\Modules\Mail\Models\MailAccount $oAccount */
+            Api::Log('Generating email part for account: ' . $oAccount->Email);
 
-        $oModuleManager = Api::GetModuleManager();
+            $oModuleManager = Api::GetModuleManager();
 
-        $oServer = $oAccount->GetServer();
+            $oServer = $oAccount->GetServer();
+            $sIncomingServer = $oServer->IncomingServer;
+            $iIncomingPort = $oServer->IncomingPort;
+            $bIncomingUseSsl = $oServer->IncomingUseSsl;
 
-        $sIncomingServer = $oServer->IncomingServer;
-        $iIncomingPort = $oServer->IncomingPort;
-        $bIncomingUseSsl = $oServer->IncomingUseSsl;
+            if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1') {
+                $sIncomingServer = $oServer->ExternalAccessImapServer;
 
-        if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1') {
-            $sIncomingServer = $oServer->ExternalAccessImapServer;
-
-            if (!empty($sIncomingServer)) {
-                $iIncomingPort = $oServer->ExternalAccessImapPort;
-                $bIncomingUseSsl = $oServer->ExternalAccessImapUseSsl;
+                if (!empty($sIncomingServer)) {
+                    $iIncomingPort = $oServer->ExternalAccessImapPort;
+                    $bIncomingUseSsl = $oServer->ExternalAccessImapUseSsl;
+                }
             }
-        }
 
-        $sOutgoingServer = $oServer->OutgoingServer;
-        $iOutgoingPort = $oServer->OutgoingPort;
-        $bOutgoingUseSsl = $oServer->OutgoingUseSsl;
+            $sOutgoingServer = $oServer->OutgoingServer;
+            $iOutgoingPort = $oServer->OutgoingPort;
+            $bOutgoingUseSsl = $oServer->OutgoingUseSsl;
 
-        if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1') {
-            $sOutgoingServer = $oServer->ExternalAccessSmtpServer;
+            if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1') {
+                $sOutgoingServer = $oServer->ExternalAccessSmtpServer;
 
-            if (!empty($sOutgoingServer)) {
-                $iOutgoingPort = $oServer->ExternalAccessSmtpPort;
-                $bOutgoingUseSsl = $oServer->ExternalAccessSmtpUseSsl;
+                if (!empty($sOutgoingServer)) {
+                    $iOutgoingPort = $oServer->ExternalAccessSmtpPort;
+                    $bOutgoingUseSsl = $oServer->ExternalAccessSmtpUseSsl;
+                }
             }
-        }
 
-        if (empty($sIncomingServer) || empty($sOutgoingServer)) {
-            Api::Log('Error: IncomingServer or OutgoingServer is empty');
-            return false;
-        }
-
-        $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
-        $sOutgoingMailServerUsername = $oAccount->IncomingLogin;
-        $sOutgoingPassword = $oAccount->getPassword();
-        $sOutgoingMailServerAuthentication = 'EmailAuthPassword';
-        if (class_exists('\Aurora\Modules\Mail\Enums\SmtpAuthType')) {
-            if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials) {
-                $sOutgoingMailServerUsername = $oServer->SmtpLogin;
-                $sOutgoingPassword = $oServer->SmtpLogin;
+            if (empty($sIncomingServer) || empty($sOutgoingServer)) {
+                Api::Log('Error: IncomingServer or OutgoingServer is empty');
+                return false;
             }
-            if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication) {
-                $sOutgoingMailServerAuthentication = 'EmailAuthNone';
+
+            $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
+            $sOutgoingMailServerUsername = $oAccount->IncomingLogin;
+            $sOutgoingPassword = $oAccount->getPassword();
+            $sOutgoingMailServerAuthentication = 'EmailAuthPassword';
+            if (class_exists('\Aurora\Modules\Mail\Enums\SmtpAuthType')) {
+                if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials) {
+                    $sOutgoingMailServerUsername = $oServer->SmtpLogin;
+                    $sOutgoingPassword = $oServer->SmtpLogin;
+                }
+                if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication) {
+                    $sOutgoingMailServerAuthentication = 'EmailAuthNone';
+                }
             }
+
+            $aEmail = array(
+                'PayloadVersion'					=> 1,
+                'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
+                'PayloadType'						=> 'com.apple.mail.managed',
+                'PayloadIdentifier'					=> $sPayloadId . '.' . $oAccount->Email . '.email',
+                'PayloadDisplayName'				=> $oAccount->Email . ' Email Account',
+                'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
+                'PayloadDescription'				=> 'Configures email account',
+                'EmailAddress'						=> $oAccount->Email,
+                'EmailAccountType'					=> 'EmailTypeIMAP',
+                'EmailAccountDescription'			=> $oAccount->Email,
+                'EmailAccountName'					=> 0 === strlen($oAccount->FriendlyName)
+                    ? $oAccount->Email : $oAccount->FriendlyName,
+                'IncomingMailServerHostName'		=> $sIncomingServer,
+                'IncomingMailServerPortNumber'		=> $iIncomingPort,
+                'IncomingMailServerUseSSL'			=> $bIncomingUseSsl,
+                'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
+                'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->getPassword() : ''),
+                'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
+                'OutgoingMailServerHostName'		=> $sOutgoingServer,
+                'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
+                'OutgoingMailServerUseSSL'			=> $bOutgoingUseSsl,
+                'OutgoingMailServerUsername'		=> $sOutgoingMailServerUsername,
+                'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $sOutgoingPassword : ''),
+                'OutgoingMailServerAuthentication'	=> $sOutgoingMailServerAuthentication,
+            );
+
+            $result = $this->_generateDict($oXmlDocument, $aEmail);
         }
 
-        $aEmail = array(
-            'PayloadVersion'					=> 1,
-            'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
-            'PayloadType'						=> 'com.apple.mail.managed',
-            'PayloadIdentifier'					=> $sPayloadId . '.' . $oAccount->Email . '.email',
-            'PayloadDisplayName'				=> $oAccount->Email . ' Email Account',
-            'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
-            'PayloadDescription'				=> 'Configures email account',
-            'EmailAddress'						=> $oAccount->Email,
-            'EmailAccountType'					=> 'EmailTypeIMAP',
-            'EmailAccountDescription'			=> $oAccount->Email,
-            'EmailAccountName'					=> 0 === strlen($oAccount->FriendlyName)
-                ? $oAccount->Email : $oAccount->FriendlyName,
-            'IncomingMailServerHostName'		=> $sIncomingServer,
-            'IncomingMailServerPortNumber'		=> $iIncomingPort,
-            'IncomingMailServerUseSSL'			=> $bIncomingUseSsl,
-            'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
-            'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->getPassword() : ''),
-            'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
-            'OutgoingMailServerHostName'		=> $sOutgoingServer,
-            'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
-            'OutgoingMailServerUseSSL'			=> $bOutgoingUseSsl,
-            'OutgoingMailServerUsername'		=> $sOutgoingMailServerUsername,
-            'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $sOutgoingPassword : ''),
-            'OutgoingMailServerAuthentication'	=> $sOutgoingMailServerAuthentication,
-        );
-
-        return $this->_generateDict($oXmlDocument, $aEmail);
+        return $result;
     }
 
     private function getAuthenticatedAccountPassword()
