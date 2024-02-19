@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+	<head>
+		<meta content="width=320; initial-scale=0.8; maximum-scale=1.0; user-scalable=0;" name="viewport" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>iOS Profile</title>
+		<link type="image/x-icon" rel="shortcut icon" href="favicon.ico" />
+		<link type="text/css" rel="stylesheet" href="static/styles/libs/libs.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+			}
+			body {
+				background: #ece9e0;
+				color: #555555;
+			}
+			.content {
+				font-size: 11pt;
+				display: table;
+				height: 100%;
+				margin: 0 auto;
+				padding: 0;
+				text-align: center;
+				width: 320px;
+			}
+			.content div {
+				display: table-cell;
+				vertical-align: middle;
+				padding: 0px 25px;
+			}
+			.content h1 {
+				font-size: 18pt;
+				font-weight: normal;
+			}
+			.button {
+				background: #6FA8DE;
+				border: 1px solid #5D97CD;
+				border-radius: 4px;
+				color: #FFFFFF;
+				display: block;
+				font-size: 12pt;
+				font-weight: bold;
+				padding: 10px;
+				text-align: center;
+				text-shadow: 0 1px 0 #4D759B;
+				margin-top: 20px;
+				cursor: pointer;
+				text-decoration: none;
+			}
+			.button:hover {
+				background: #7FB8EE;
+			}
+			.hide {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="content">
+			<div>
+				<h1>
+					{{IOS/ERROR_TITLE}}
+				</h1>
+				<p>
+					{{IOS/ERROR_DESC}}
+				</p>
+				<p>
+					<a class="button" href="./">
+						<span>{{IOS/DESC_BUTTON_OPEN}}</span>
+					</a>
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

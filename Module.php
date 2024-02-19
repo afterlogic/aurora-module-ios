@@ -57,6 +57,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $this->AddEntries(
             array(
                 'ios' => 'EntryIos',
+                'ios-error' => 'EntryIosError',
                 'profile' => 'EntryProfile'
             )
         );
@@ -114,6 +115,32 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     /**
      * @ignore
+     * @return string
+     */
+    public function EntryIosError()
+    {
+        $sResult = \file_get_contents($this->GetPath() . '/templates/Ios-error.html');
+
+        $oApiIntegrator = \Aurora\System\Managers\Integrator::getInstance();
+        $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
+        if (0 < $iUserId) {
+            $sResult = strtr($sResult, array(
+                '{{IOS/ERROR_TITLE}}' => $this->i18N('ERROR_TITLE'),
+                '{{IOS/ERROR_DESC}}' => $this->i18N('ERROR_DESC'),
+                '{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN'),
+                '{{AppVersion}}' => Application::GetVersion(),
+                '{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
+            ));
+            \Aurora\Modules\CoreWebclient\Module::Decorator()->SetHtmlOutputHeaders();
+        } else {
+            \Aurora\System\Api::Location('./');
+        }
+
+        return $sResult;
+    }
+
+    /**
+     * @ignore
      */
     public function EntryProfile()
     {
@@ -129,7 +156,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         }
 
         if (!$mResultProfile) {
-            \Aurora\System\Api::Location('./?IOS/Error');
+            \Aurora\System\Api::Location('./?ios-error');
         } else {
             \header('Content-type: application/x-apple-aspen-config; chatset=utf-8');
             \header('Content-Disposition: attachment; filename="afterlogic.mobileconfig"');
