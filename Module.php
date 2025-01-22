@@ -103,7 +103,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                 '{{IOS/DESC_BUTTON_SKIP}}' => $this->i18N('DESC_BUTTON_SKIP'),
                 '{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN'),
                 '{{AppVersion}}' => Application::GetVersion(),
-                '{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
+                '{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink(false)
             ));
             \Aurora\Modules\CoreWebclient\Module::Decorator()->SetHtmlOutputHeaders();
         } else {
@@ -129,7 +129,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                 '{{IOS/ERROR_DESC}}' => $this->i18N('ERROR_DESC'),
                 '{{IOS/DESC_BUTTON_OPEN}}' => $this->i18N('DESC_BUTTON_OPEN'),
                 '{{AppVersion}}' => Application::GetVersion(),
-                '{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink()
+                '{{IntegratorLinks}}' => $oApiIntegrator->buildHeadersLink(false)
             ));
             \Aurora\Modules\CoreWebclient\Module::Decorator()->SetHtmlOutputHeaders();
         } else {
