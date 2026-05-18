@@ -51,6 +51,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
                 $oDictElement->appendChild($oXmlDocument->createElement('integer', $mValue));
             } elseif (is_bool($mValue)) {
                 $oDictElement->appendChild($oXmlDocument->createElement($mValue ? 'true' : 'false'));
+            } elseif (is_array($mValue)) {
+                $oArray = $oXmlDocument->createElement('array');
+                foreach ($mValue as $mItem) {
+                    $oArray->appendChild($oXmlDocument->createElement('string', $mItem));
+                }
+                $oDictElement->appendChild($oArray);
             } else {
                 $oDictElement->appendChild($oXmlDocument->createElement('string', $mValue));
             }
@@ -77,30 +83,54 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
             $oModuleManager = Api::GetModuleManager();
 
+            $sIncomingServer = '';
+            $iIncomingPort = 143;
+            $bIncomingUseSsl = false;
+
+            $sOutgoingServer = '';
+            $iOutgoingPort = 25;
+            $bOutgoingUseSsl = false;
+
             $oServer = $oAccount->GetServer();
-            $sIncomingServer = $oServer->IncomingServer;
-            $iIncomingPort = $oServer->IncomingPort;
-            $bIncomingUseSsl = $oServer->IncomingUseSsl;
 
-            if ($sIncomingServer == 'localhost' || $sIncomingServer == '127.0.0.1') {
+            // Incoming Server
+            if ($oServer->SetExternalAccessServers && !empty($oServer->ExternalAccessImapServer)) { // from external Server settings
                 $sIncomingServer = $oServer->ExternalAccessImapServer;
-
-                if (!empty($sIncomingServer)) {
-                    $iIncomingPort = $oServer->ExternalAccessImapPort;
-                    $bIncomingUseSsl = $oServer->ExternalAccessImapUseSsl;
+                $iIncomingPort = $oServer->ExternalAccessImapPort;
+                $bIncomingUseSsl = $oServer->ExternalAccessImapUseSsl;
+            } else {
+                $sIncomingServer = \trim($oModuleManager->getModuleConfigValue('ExternalHostNameOfLocalImap', null));
+                if (0 < \strlen($sIncomingServer)) { // from Mail module settings
+                    $aMatch = array();
+                    if (\preg_match('/:([\d]+)$/', $sIncomingServer, $aMatch) && !empty($aMatch[1]) && \is_numeric($aMatch[1])) {
+                        $sIncomingServer = \preg_replace('/:[\d]+$/', $sIncomingServer, '');
+                        $iIncomingPort = (int) $aMatch[1];
+                        $bIncomingUseSsl = 993 === $iIncomingPort;
+                    }
+                } else { // from Server settings
+                    $sIncomingServer = $oServer->IncomingServer;
+                    $iIncomingPort = $oServer->IncomingPort;
+                    $bIncomingUseSsl = $oServer->IncomingUseSsl;
                 }
             }
 
-            $sOutgoingServer = $oServer->OutgoingServer;
-            $iOutgoingPort = $oServer->OutgoingPort;
-            $bOutgoingUseSsl = $oServer->OutgoingUseSsl;
-
-            if ($sOutgoingServer == 'localhost' || $sOutgoingServer == '127.0.0.1') {
+            // Outgoing Server
+            if ($oServer->SetExternalAccessServers && !empty($oServer->ExternalAccessSmtpServer)) { // from external Server settings
                 $sOutgoingServer = $oServer->ExternalAccessSmtpServer;
-
-                if (!empty($sOutgoingServer)) {
-                    $iOutgoingPort = $oServer->ExternalAccessSmtpPort;
-                    $bOutgoingUseSsl = $oServer->ExternalAccessSmtpUseSsl;
+                $iOutgoingPort = $oServer->ExternalAccessSmtpPort;
+                $bOutgoingUseSsl = $oServer->ExternalAccessSmtpUseSsl;
+            } else {
+                if (0 < \strlen($sOutgoingServer)) { // from Mail module settings
+                    $aMatch = array();
+                    if (\preg_match('/:([\d]+)$/', $sOutgoingServer, $aMatch) && !empty($aMatch[1]) && \is_numeric($aMatch[1])) {
+                        $sOutgoingServer = \preg_replace('/:[\d]+$/', $sOutgoingServer, '');
+                        $iOutgoingPort = (int) $aMatch[1];
+                        $bOutgoingUseSsl = 465 === $iOutgoingPort;
+                    }
+                } else { // from Server settings
+                    $sOutgoingServer = $oServer->OutgoingServer;
+                    $iOutgoingPort = $oServer->OutgoingPort;
+                    $bOutgoingUseSsl = $oServer->OutgoingUseSsl;
                 }
             }
 
@@ -111,44 +141,59 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
             $bIncludePasswordInProfile = $this->oModule->oModuleSettings->IncludePasswordInProfile;
             $sOutgoingMailServerUsername = $oAccount->IncomingLogin;
-            $sOutgoingPassword = $oAccount->getPassword();
             $sOutgoingMailServerAuthentication = 'EmailAuthPassword';
+            $bUseSpecifiedCredentials = false;
             if (class_exists('\Aurora\Modules\Mail\Enums\SmtpAuthType')) {
                 if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials) {
-                    $sOutgoingMailServerUsername = $oServer->SmtpLogin;
-                    $sOutgoingPassword = $oServer->SmtpLogin;
+                    $bUseSpecifiedCredentials = true;
                 }
                 if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::NoAuthentication) {
                     $sOutgoingMailServerAuthentication = 'EmailAuthNone';
                 }
             }
 
-            $aEmail = array(
-                'PayloadVersion'					=> 1,
-                'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
-                'PayloadType'						=> 'com.apple.mail.managed',
-                'PayloadIdentifier'					=> $sPayloadId . '.' . $oAccount->Email . '.email',
-                'PayloadDisplayName'				=> $oAccount->Email . ' Email Account',
-                'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
-                'PayloadDescription'				=> 'Configures email account',
-                'EmailAddress'						=> $oAccount->Email,
-                'EmailAccountType'					=> 'EmailTypeIMAP',
-                'EmailAccountDescription'			=> $oAccount->Email,
-                'EmailAccountName'					=> 0 === strlen($oAccount->FriendlyName)
-                    ? $oAccount->Email : $oAccount->FriendlyName,
-                'IncomingMailServerHostName'		=> $sIncomingServer,
-                'IncomingMailServerPortNumber'		=> $iIncomingPort,
-                'IncomingMailServerUseSSL'			=> $bIncomingUseSsl,
-                'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
-                'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->getPassword() : ''),
-                'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
-                'OutgoingMailServerHostName'		=> $sOutgoingServer,
-                'OutgoingMailServerPortNumber'		=> $iOutgoingPort,
-                'OutgoingMailServerUseSSL'			=> $bOutgoingUseSsl,
-                'OutgoingMailServerUsername'		=> $sOutgoingMailServerUsername,
-                'OutgoingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $sOutgoingPassword : ''),
-                'OutgoingMailServerAuthentication'	=> $sOutgoingMailServerAuthentication,
-            );
+            if ($oAccount->XOAuth === 'gmail') {
+                $aEmail = [
+                    'PayloadVersion'				=> 1,
+                    'PayloadUUID'					=> \Sabre\DAV\UUIDUtil::getUUID(),
+                    'PayloadType'					=> 'com.apple.account.Google',
+                    'PayloadIdentifier'				=> 'com.company.gmail.account.' . $oAccount->Email,
+                    'PayloadDisplayName'			=> 'Gmail',
+                    'EmailAddress'					=> $oAccount->Email,
+                    'EmailAccountName'				=> 0 === strlen($oAccount->FriendlyName)
+                        ? $oAccount->Email : $oAccount->FriendlyName,
+                    'Services'					    => ['Mail'],
+                ];
+            } else {
+                $aEmail = [
+                    'PayloadVersion'					=> 1,
+                    'PayloadUUID'						=> \Sabre\DAV\UUIDUtil::getUUID(),
+                    'PayloadType'						=> 'com.apple.mail.managed',
+                    'PayloadIdentifier'					=> $sPayloadId . '.' . $oAccount->Email . '.email',
+                    'PayloadDisplayName'				=> $oAccount->Email . ' Email Account',
+                    'PayloadOrganization'				=> $oModuleManager->getModuleConfigValue('Core', 'SiteName'),
+                    'PayloadDescription'				=> 'Configures email account',
+                    'EmailAddress'						=> $oAccount->Email,
+                    'EmailAccountType'					=> 'EmailTypeIMAP',
+                    'EmailAccountDescription'			=> $oAccount->Email,
+                    'EmailAccountName'					=> 0 === strlen($oAccount->FriendlyName)
+                        ? $oAccount->Email : $oAccount->FriendlyName,
+                    'IncomingMailServerHostName'		=> $sIncomingServer,
+                    'IncomingMailServerPortNumber'		=> $iIncomingPort,
+                    'IncomingMailServerUseSSL'			=> $bIncomingUseSsl,
+                    'IncomingMailServerUsername'		=> $oAccount->IncomingLogin,
+                    'IncomingPassword'					=> $bIsDemo ? 'demo' : ($bIncludePasswordInProfile ? $oAccount->getPassword() : ''),
+                    'IncomingMailServerAuthentication'	=> 'EmailAuthPassword',
+                ];
+                if (!$bUseSpecifiedCredentials) {
+                    $aEmail['OutgoingMailServerHostName'] = $sOutgoingServer;
+                    $aEmail['OutgoingMailServerPortNumber'] = $iOutgoingPort;
+                    $aEmail['OutgoingMailServerUseSSL']	= 587 == $iOutgoingPort ? true : $bOutgoingUseSsl;
+                    $aEmail['OutgoingMailServerUsername'] = $sOutgoingMailServerUsername;
+                    $aEmail['OutgoingPasswordSameAsIncomingPassword']	= true;
+                    $aEmail['OutgoingMailServerAuthentication']	= $sOutgoingMailServerAuthentication;
+                }
+            }
 
             $result = $this->_generateDict($oXmlDocument, $aEmail);
         }
