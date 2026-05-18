@@ -8,6 +8,7 @@
 namespace Aurora\Modules\Ios;
 
 use Aurora\System\Application;
+use Aurora\System\Facades\Route;
 
 /**
  * Allows to configure iOS device automatically for syncing mails, contacts and calendars using iOS profile.
@@ -54,12 +55,13 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     public function init()
     {
-        $this->AddEntries(
-            array(
+        Route::add(
+            $this,
+            [
                 'ios' => 'EntryIos',
                 'ios-error' => 'EntryIosError',
                 'profile' => 'EntryProfile'
-            )
+            ]
         );
     }
     /***** private functions *****/
